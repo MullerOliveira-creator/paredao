@@ -108,3 +108,15 @@ Para atualizar no GitHub: suba `index.html`, `spotify.js`, `r5.css`, `r5.js`, `r
 - No Android (e onde só existe picture-in-picture de vídeo), o botão de pop-up abre uma janelinha flutuante do sistema com capa, música, artista e progresso.
 - Tocar/pausar/voltar/avançar aparecem como botões nativos da janelinha.
 - Ícone da tela de espera: nota + onda sonora no estilo da casinha. Face "Sua história" no layout novo (Last.fm + top do Spotify).
+- Pop-up Android segue o estilo do modo palco: Paredão, Toca-discos, Fita cassete, Display automotivo (VFD) e Painel de aeroporto; os outros usam o cartão.
+- Barra de progresso (anel) usa a cor principal da capa também na demonstração; capa sem cor usa o neon do tema.
+
+### Rodada 7
+- Pop-up do computador mostra o estilo do modo palco escolhido, com botões embaixo (a barra escura de cima é do Chrome).
+- Cubo gira acompanhando o dedo/mouse e encaixa ao soltar; rolagem do mouse rola a face quando ela tem conteúdo.
+- Mais leve: logo Hora do Show sem redesenho a cada quadro, fumaça sem filtro animado; modo leve automático na TV/Echo Show (sem desfoque de vidro).
+- Tela de espera: Hora do Show menor e cubo maior. Dica de favoritos em cima do coração. Volume não some no mudo.
+- Dispositivos em faixa compacta, até 6 lado a lado; letra grande some enquanto a faixa está aberta.
+- Pop-up "Sem barra" (padrão): no computador também usa a janelinha de vídeo, sem a barra do Chrome; "Com botões" volta a usar a janela com a barra. Escolha em Configurações → Pop-up.
+- Rodada 8 (r8.css): esferas e controles do player no vidro do play; botões com texto em pílula de vidro; cartões com contorno neon no escolhido; Salvar em neon cheio.
+- Configurações: painel não passa mais da borda de baixo (o Salvar ficava escondido).

@@ -281,7 +281,7 @@
     stg.style.left = stg.style.top = ""; stg.style.right = stg.style.bottom = "";
     drawPick();
   }
-  setInterval(() => { if (stg.classList.contains("on")) fill(); }, 400);
+  setInterval(() => { if (stg.classList.contains("on") || stg.classList.contains("inpip")) fill(); }, 400);
   /* escolha nas configurações */
   const pal = document.getElementById("cfgpal"); let box = null;
   function drawPick() {
@@ -294,4 +294,49 @@
   }
   setStage(cur);
   window.STAGE = { set: setStage, list: ST };
+})();
+
+/* ---------- Cor da barra de progresso = cor principal da capa (demonstração e Spotify) ---------- */
+(function () {
+  const CC = {}, busy = {};
+  function dominant(im) {
+    const c = document.createElement("canvas"); c.width = c.height = 32;
+    const x = c.getContext("2d"); x.drawImage(im, 0, 0, 32, 32);
+    const d = x.getImageData(0, 0, 32, 32).data, bins = Array.from({ length: 12 }, () => ({ w: 0, r: 0, g: 0, b: 0 }));
+    for (let p = 0; p < d.length; p += 4) {
+      const r = d[p], g = d[p + 1], b = d[p + 2], mx = Math.max(r, g, b), mn = Math.min(r, g, b), s = mx ? (mx - mn) / mx : 0;
+      if (mx < 50 || s < .2) continue;
+      let h = 0; const ch = mx - mn;
+      if (ch) h = mx === r ? ((g - b) / ch + 6) % 6 : mx === g ? (b - r) / ch + 2 : (r - g) / ch + 4;
+      const B = bins[Math.floor(h * 2) % 12], w = s * s * (mx / 255);
+      B.w += w; B.r += r * w; B.g += g * w; B.b += b * w;
+    }
+    const top = bins.reduce((a, c) => c.w > a.w ? c : a, { w: 0 });
+    if (top.w < .8) return null; // capa sem cor (preto e branco): fica a cor do tema
+    let rgb = [top.r / top.w, top.g / top.w, top.b / top.w];
+    const mx = Math.max(...rgb); if (mx < 210) rgb = rgb.map(v => v * 210 / mx); // brilho suficiente para o neon
+    return "#" + rgb.map(v => Math.min(255, Math.round(v)).toString(16).padStart(2, "0")).join("");
+  }
+  const themeC = () => getComputedStyle(document.documentElement).getPropertyValue("--neon").trim() || getComputedStyle(document.documentElement).getPropertyValue("--a").trim() || "#1fd3f2";
+  window.coverColor = function (k) {
+    let u = ""; try { u = art(k).u || ""; } catch (e) {}
+    if (!u) return themeC();
+    if (u in CC) return CC[u] || themeC();
+    if (!busy[u]) {
+      busy[u] = 1;
+      const im = new Image(); im.crossOrigin = "anonymous";
+      im.onload = () => { try { CC[u] = dominant(im); } catch (e) { CC[u] = null; } };
+      im.onerror = () => { CC[u] = null; };
+      im.src = u;
+    }
+    return (TC[k] && /^#[0-9a-f]{6}$/i.test(TC[k])) ? TC[k] : themeC();
+  };
+  // o anel de progresso lê TC[S.i % TC.length]; troca só durante o desenho, sem mexer nas capas
+  const _dr = drawRing;
+  drawRing = function (dt) {
+    if (!TC.length) return _dr(dt);
+    const j = S.i % TC.length, old = TC[j];
+    TC[j] = coverColor(S.i);
+    try { return _dr(dt); } finally { TC[j] = old; }
+  };
 })();

@@ -1,0 +1,56 @@
+/* Paredão · rodada 7: mais leve, cubo com arrasto, faixa de dispositivos, pop-up com o estilo escolhido */
+
+/* ---------- desempenho: animar só transform/opacity ---------- */
+.hs{animation:none!important}
+.sbar:not(.open){animation:none!important}
+#home .mkw .smk.st{animation-name:smk5n!important}
+#home .mkw i.smk.st{animation-name:smk6n!important}
+#home .mkw .smk,.smk{will-change:transform,opacity}
+#cu,#rcu{will-change:transform}
+@keyframes smk5n{0%{opacity:0;transform:translate(0,0) scale(.5)}1%{opacity:.64;transform:translate(calc(var(--sx)*.1),8%) scale(.75)}2.5%{opacity:.48;transform:translate(calc(var(--sx)*.45),calc(var(--fall,240px)*.12)) scale(1.1)}6%{opacity:.23;transform:translate(calc(var(--sx)*.8),calc(var(--fall,240px)*.35)) scale(1.8)}12%{opacity:.07;transform:translate(calc(var(--sx)*1),calc(var(--fall,240px)*.55)) scale(2.7)}20%{opacity:.02;transform:translate(calc(var(--sx)*1.25),calc(var(--fall,240px)*.8)) scale(3.5)}28%{opacity:0;transform:translate(calc(var(--sx)*1.6),var(--fall,240px)) scale(4.4)}100%{opacity:0;transform:translate(calc(var(--sx)*1.6),var(--fall,240px)) scale(4.4)}}
+@keyframes smk6n{0%{opacity:0;transform:translate(0,0) scale(.5)}1%{opacity:.64;transform:translate(calc(var(--sx)*.12),calc(var(--fall,240px)*.05)) scale(.8)}3%{opacity:.45;transform:translate(calc(var(--sx)*.4),calc(var(--fall,240px)*.22)) scale(1.2)}6%{opacity:.24;transform:translate(calc(var(--sx)*.8),calc(var(--fall,240px)*.48)) scale(1.9)}9.5%{opacity:.1;transform:translate(calc(var(--sx)*1.35),calc(var(--fall,240px)*.75)) scale(3)}13%{opacity:0;transform:translate(calc(var(--sx)*2),calc(var(--fall,240px)*.98)) scale(4.6)}100%{opacity:0;transform:translate(calc(var(--sx)*2),calc(var(--fall,240px)*.98)) scale(4.6)}}
+/* modo leve automático (TV, Echo Show, aparelhos com pouco processador): sem desfoque de vidro */
+html.lite *,html.lite *:before,html.lite *:after{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+html.lite #home .mkw .smk.d2{display:none!important}
+html.lite #dm.dm,html.lite #fm.dm,html.lite .gbtn,html.lite #cfg>div{background-color:color-mix(in srgb,var(--bg) 82%,transparent)!important}
+
+/* ---------- tela de espera: Hora do Show menor, cubo maior ---------- */
+#wait .hs{width:min(calc(430px*var(--k)),64vw)!important}
+#wait .rvis{--rc:min(48vh,54vw,calc(390px*var(--k)))!important;height:calc(var(--rc)*1.22)!important}
+@media (max-width:700px){#wait .rvis{--rc:min(68vw,40vh)!important}}
+
+/* ---------- dica de favoritos sempre em cima do coração (igual ao aviso "Adicionado") ---------- */
+#fm.dm{top:auto!important;bottom:calc(100% + 12px)!important;left:0!important;right:auto!important;transform:none!important}
+
+/* ---------- volume: a barra fica no lugar mesmo no mudo ---------- */
+.vo.mu input{visibility:visible!important;opacity:.45!important}
+.vo.mu button{left:auto!important;margin-left:0!important}
+
+/* ---------- dispositivos: faixa compacta, até 6 lado a lado ---------- */
+#dm.dm.on{display:grid!important;z-index:130!important}
+#dm.dm{grid-template-columns:repeat(var(--dc,4),124px)!important;width:max-content!important;max-width:calc(100vw/var(--k) - 24px)!important;gap:8px!important;padding:10px 12px 12px!important;border-radius:18px!important}
+body:has(#dm.dm.on) #bigly,body.dmon #bigly,body:has(#dm.dm.on) #tl,body.dmon #tl{opacity:0!important;transition:opacity .2s}
+#dm>p{order:-1;grid-column:1/-1!important;margin:0 0 2px!important;font:700 14px "Chakra Petch",sans-serif!important;opacity:.85}
+#dm>div{min-height:0!important;height:62px!important;padding:8px 9px!important;border-radius:12px!important;gap:1px!important;
+ box-shadow:inset 0 1px 1px rgba(255,255,255,.3),0 4px 10px rgba(0,0,0,.3)!important;transform:none!important}
+#dm>div:hover{transform:translateY(-2px)!important}
+#dm>div.on{transform:translateY(-2px)!important;box-shadow:inset 0 0 0 1.5px var(--neon,var(--a)),0 0 14px color-mix(in srgb,var(--neon,var(--a)) 45%,transparent)!important}
+#dm>div .di{width:18px!important;height:18px!important}
+#dm>div .dp{top:8px!important;right:9px!important;font-size:11px!important}
+#dm>div b{font-size:12.5px!important;margin-top:3px!important;-webkit-line-clamp:1!important;white-space:nowrap;display:block!important;max-width:100%}
+#dm>div small{font-size:10.5px!important;white-space:nowrap;overflow:hidden;max-width:100%}
+#dm>div .w{height:9px!important}
+#dm>section{grid-column:1/-1!important;display:grid!important;margin-top:2px!important;font-size:13px!important;gap:10px!important;grid-template-columns:auto 1fr 40px!important}
+#dm>section input[type=range]{height:10px!important}
+#dm>section input[type=range]::-webkit-slider-thumb{width:18px!important;height:18px!important}
+.hsw{position:relative;display:block;width:fit-content;margin-left:auto;margin-right:auto;line-height:0}
+.hsw .hsdot{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible;will-change:transform}
+
+/* escolha do pop-up */
+#cfgpip{margin-top:14px}
+#cfgpip .pipseg{width:100%;display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px}
+#cfg #cfgpip button,#cfgpip button{width:auto!important;height:auto!important;min-height:0!important;border-radius:14px!important;margin:0!important;display:flex!important;flex-direction:column;align-items:flex-start;gap:2px;padding:10px 12px;border-radius:14px;border:0;cursor:pointer;text-align:left;color:var(--ink,#fff);font:700 14px "Chakra Petch",sans-serif;background:linear-gradient(160deg,rgba(255,255,255,.14),rgba(255,255,255,.03));box-shadow:inset 0 1px 1px rgba(255,255,255,.3)}
+#cfgpip button small{font:400 11px "Chakra Petch",sans-serif;opacity:.7}
+#cfg #cfgpip button.on,#cfgpip button.on{box-shadow:inset 0 0 0 1.5px var(--neon,var(--a)),0 0 12px color-mix(in srgb,var(--neon,var(--a)) 40%,transparent)!important}
+#cfgpip .tlab{font:600 13px "Chakra Petch",Saira,sans-serif;opacity:.85;margin:4px 0 2px}
+#cfg .cfgp{max-height:calc(100vh/var(--k,1) - 200px)!important}

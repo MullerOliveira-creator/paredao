@@ -1,0 +1,42 @@
+/* Paredão · regra única de botões (rodada 8)
+   A+B: esferas de vidro (casinha, tela de espera, engrenagem, dado) e todos os controles do player → vidro do play
+   C: botões com texto → pílula de vidro · cartões de escolha → vidro, escolhido com contorno neon
+   D: Salvar → neon cheio (vira disquete quando você escolher o ícone) */
+:root{--ne:var(--neon,var(--a));
+ --sph:radial-gradient(circle at var(--mx,50%) var(--my,28%),color-mix(in srgb,var(--a) 40%,transparent),transparent 48%),radial-gradient(circle at 50% 46%,var(--g1),var(--g2) 58%,var(--g3));
+ --sphS:inset 0 0 0 1.5px var(--rim),inset 0 0 0 3.5px var(--rim2),0 0 14px var(--glow),0 4px 0 -1px var(--rim2),0 8px 12px rgba(0,0,0,.4);
+ --sphH:inset 0 0 0 1.5px var(--rim),inset 0 0 0 3.5px var(--rim2),0 0 26px color-mix(in srgb,var(--ne) 70%,transparent),0 4px 0 -1px var(--rim2),0 10px 16px rgba(0,0,0,.45);
+ --iceL:linear-gradient(160deg,rgba(255,255,255,.22),rgba(255,255,255,.05) 55%,color-mix(in srgb,var(--ne) 10%,transparent))}
+/* ---------- A + B: vidro do play ---------- */
+.gbtn,button#cfgb.gbtn,button#cfgb.gbtn:hover,#stage .tr button,#stage .cb>.cbl>button,#stage .cb>.cbr>button,#stage .cb .vo>button,#stage .cb>button{
+ background:var(--sph)!important;border:0!important;box-shadow:var(--sphS)!important;color:var(--ink,#e8fdff)!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;transition:transform .18s,box-shadow .2s!important}
+.gbtn:hover,button#cfgb.gbtn:hover,#stage .tr button:hover,#stage .cb>.cbl>button:hover,#stage .cb>.cbr>button:hover,#stage .cb .vo>button:hover,#stage .cb>button:hover,
+#stage .tr button:focus-visible,#stage .cb>.cbl>button:focus-visible,#stage .cb>.cbr>button:focus-visible{background:var(--sph)!important;box-shadow:var(--sphH)!important;transform:scale(1.06)}
+.gbtn:active,#stage .tr button:active,#stage .cb>.cbl>button:active,#stage .cb>.cbr>button:active,#stage .cb .vo>button:active{transform:translateY(2px) scale(.97)!important;box-shadow:inset 0 0 0 1.5px var(--rim),inset 0 0 0 3.5px var(--rim2),0 0 10px var(--glow),0 1px 0 -1px var(--rim2),0 3px 6px rgba(0,0,0,.4)!important}
+/* o brilho de cima do vidro (o mesmo do play) */
+.gbtn:after{display:none!important}
+.gbtn:before,#stage .tr button:before,#stage .cb>.cbl>button:before,#stage .cb>.cbr>button:before,#stage .cb .vo>button:before,#stage .cb>button:before{content:""!important;display:block!important;position:absolute;left:20%;right:20%;top:7%;height:36%;border-radius:50%;background:linear-gradient(rgba(255,255,255,.5),rgba(255,255,255,0))!important;pointer-events:none;opacity:1!important}
+#stage .cb .vo>button{position:relative}
+/* ligado: favoritado, no mudo, menu de dispositivos aberto → ícone na cor neon */
+#fvb.fav,.vo.mu button,body.dmon #stage [data-a=d]{color:var(--ne)!important}
+#fvb.fav .ic,.vo.mu button .ic,body.dmon #stage [data-a=d] .ic{filter:drop-shadow(0 0 4px var(--ne)) drop-shadow(0 0 10px var(--ne))!important}
+/* tema claro: vidro branco (igual à foto do play) com ícone na cor do tema */
+html.light .gbtn,html.light button#cfgb.gbtn,html.light #stage .tr button,html.light #stage .cb>.cbl>button,html.light #stage .cb>.cbr>button,html.light #stage .cb .vo>button,html.light #stage .cb>button{color:var(--a)!important}
+
+/* ---------- C: pílula de vidro (botões com texto) ---------- */
+.xp,#cfgcp,.tseg button{background:var(--iceL)!important;border:0!important;box-shadow:inset 0 0 0 1px rgba(255,255,255,.22),0 0 0 1.5px color-mix(in srgb,var(--ne) 55%,transparent),0 6px 14px rgba(0,0,0,.25)!important;color:var(--ink,#fff)!important;opacity:1!important}
+.xp:hover,.xp.lit,#cfgcp:hover{box-shadow:inset 0 0 0 1px rgba(255,255,255,.3),0 0 0 2px var(--ne),0 0 18px color-mix(in srgb,var(--ne) 60%,transparent)!important}
+.tseg{background:rgba(255,255,255,.06)!important;gap:4px}
+.tseg button:not(.on){background:none!important;box-shadow:none!important;opacity:.7!important}
+.tseg button.on{box-shadow:inset 0 0 0 1px rgba(255,255,255,.3),0 0 0 2px var(--ne),0 0 14px color-mix(in srgb,var(--ne) 55%,transparent)!important}
+html.light{--iceL:linear-gradient(160deg,#fff,rgba(255,255,255,.7))}
+html.light .xp,html.light #cfgcp,html.light .tseg button{color:var(--a)!important}
+html.light .tseg button.on{box-shadow:inset 0 0 0 1px #fff,0 0 0 2px var(--a),0 0 12px color-mix(in srgb,var(--a) 40%,transparent)!important}
+
+/* ---------- cartões de escolha ---------- */
+[data-stg],#cfgpip button{background:var(--iceL)!important;border:0!important;box-shadow:inset 0 1px 1px rgba(255,255,255,.3),0 6px 14px rgba(0,0,0,.25)!important;color:var(--ink,#fff)!important}
+[data-stg].on,#cfgpip button.on,#dm>div.on{box-shadow:inset 0 0 0 1px rgba(255,255,255,.3),0 0 0 2px var(--ne),0 0 16px color-mix(in srgb,var(--ne) 55%,transparent)!important}
+html.light [data-stg],html.light #cfgpip button{color:var(--a)!important}
+
+/* ---------- D: confirmação ---------- */
+#cfgok{background:var(--ne)!important;color:#0a1218!important;border:0!important;box-shadow:0 0 16px color-mix(in srgb,var(--ne) 70%,transparent)!important;font-weight:800}

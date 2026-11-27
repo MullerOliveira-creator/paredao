@@ -224,19 +224,11 @@
 
   /* ---------- 7. girar o cubo com rolagem e deslizar ---------- */
   let wl = 0;
-  const wheel = (fn) => e => { const now = Date.now(); if (now - wl < 650) { e.preventDefault(); return; } const dx = e.deltaX, dy = e.deltaY; if (Math.max(Math.abs(dx), Math.abs(dy)) < 12) return; wl = now; e.preventDefault(); fn(dx, dy); };
+  const canScroll = (t, dy) => { const el = t && t.closest && t.closest(".xf,#ql,.f .ls,#kf"); if (!el || el.scrollHeight <= el.clientHeight + 2) return false; return dy > 0 ? el.scrollTop + el.clientHeight < el.scrollHeight - 1 : el.scrollTop > 0; };
+  const wheel = (fn) => e => { if (Math.abs(e.deltaY) > Math.abs(e.deltaX) && canScroll(e.target, e.deltaY)) return; const now = Date.now(); if (now - wl < 650) { e.preventDefault(); return; } const dx = e.deltaX, dy = e.deltaY; if (Math.max(Math.abs(dx), Math.abs(dy)) < 12) return; wl = now; e.preventDefault(); fn(dx, dy); };
   $("#vw").addEventListener("wheel", wheel((dx, dy) => { if (Math.abs(dx) > Math.abs(dy)) turn(0, dx > 0 ? -90 : 90); else turn(dy > 0 ? -90 : 90, 0); }), { passive: false });
   $("#rst").addEventListener("wheel", wheel((dx, dy) => { rLast = Date.now(); if (Math.abs(dx) > Math.abs(dy)) rTurn(0, dx > 0 ? -90 : 90); else rTurn(0, dy > 0 ? -90 : 90); }), { passive: false });
-  { // deslizar no cubo do player (fora do anel)
-    let sx = 0, sy = 0, on = 0; const st = $("#st");
-    st.addEventListener("pointerdown", e => { sx = e.clientX; sy = e.clientY; on = 1; });
-    st.addEventListener("pointerup", e => {
-      if (!on) return; on = 0; const dx = e.clientX - sx, dy = e.clientY - sy;
-      if (Math.max(Math.abs(dx), Math.abs(dy)) < 45) return;
-      if (Math.abs(dx) > Math.abs(dy)) turn(0, dx < 0 ? -90 : 90); else turn(dy < 0 ? 90 : -90, 0);
-    });
-    st.addEventListener("pointercancel", () => on = 0);
-  }
+  // (o arrasto do cubo agora fica no r7.js, acompanhando o dedo)
 
   /* ---------- 8. faces do cubo ---------- */
   $$("#cu .tg").forEach(tg => { tg.innerHTML = '<i class="tc"></i><div class="tx"><b class="tn"></b><i class="sub"></i></div>'; });
@@ -367,8 +359,8 @@
     const t = (d.t || "").toLowerCase(), n = (d.n || "").toLowerCase();
     if (/navegador|dispositivo|computer|notebook|pc|mac/.test(t + " " + n)) return ["pc", d.self ? "Tocando aqui" : "Computador"];
     if (/echo show|show 15|show 8|show 10/.test(n)) return ["show", "Alto-falante com tela"];
-    if (/tv|oled|tizen|smart/.test(t + " " + n)) return ["tv", "Smart TV"];
-    if (/phone|iphone|galaxy|celular|smartphone|flip/.test(t + " " + n)) return ["phone", "Celular"];
+    if (/phone|iphone|celular|smartphone|z flip|z fold|flip/.test(t + " " + n)) return ["phone", "Celular"];
+    if (/tv|oled|tizen|smart|chromecast/.test(t + " " + n)) return ["tv", "Smart TV"];
     if (/fone|head|buds|airpods/.test(n)) return ["head", "Fone"];
     return ["spk", "Alto-falante"];
   }
