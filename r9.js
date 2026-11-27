@@ -167,7 +167,7 @@
     const o0 = cu.style.transform || M.toString();
     setM(FM[f]());
     const end = cu.style.transform;
-    cu.getAnimations().forEach(a => a.cancel());
+    cu.getAnimations().forEach(a => { if (!(window.CSSAnimation && a instanceof CSSAnimation)) a.cancel(); });
     // giro no sentido do gesto, com um pequeno desvio a cada vez
     const mid = new DOMMatrix(o0).preMultiplySelf ? new DOMMatrix().rotate(ax * .55, ay * .55, (Math.random() - .5) * 10).multiply(new DOMMatrix(o0)) : new DOMMatrix(o0);
     cu.animate([{ transform: o0 }, { transform: mid.toString(), offset: .42 }, { transform: end }], { duration: 950, easing: "cubic-bezier(.45,.05,.3,1)" });
@@ -187,7 +187,7 @@
   const vw = document.getElementById("vw");
   if (vw) {
     const d = document.createElement("div"); d.id = "fdots"; vw.appendChild(d); let last = -1;
-    setInterval(() => { const f = front(); if (f === last) return; last = f; const i = ORDER.indexOf(f); d.innerHTML = ORDER.map((_, j) => `<i class="${j === i ? "on" : ""}"></i>`).join("") + `<b>${i + 1} · ${NAME[f] || ""}</b>`; }, 250);
+    setInterval(() => { const f = front(); if (f === last) return; last = f; const i = ORDER.indexOf(f); d.innerHTML = ORDER.map((_, j) => `<i class="${j === i ? "on" : ""}"></i>`).join("") + `<b>${NAME[f] || ""}</b>`; }, 250);
   }
   // letra: cada linha nova entra vindo de dentro da tela
   const big = document.getElementById("bigly");

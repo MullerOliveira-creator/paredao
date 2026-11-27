@@ -1,0 +1,85 @@
+/* Paredão Player — rodada 12 */
+
+/* ---------- anel do tempo em volta do play (o retângulo atrás do cubo sumiu) ---------- */
+#stage .tr.rgon{position:relative}
+#stage .tr.rgon #rg{position:absolute!important;right:auto!important;bottom:auto!important;pointer-events:none;z-index:2}
+#stage .tr.rgon button{position:relative;z-index:3}
+
+/* ---------- cubo: mais alto, sem invadir os botões; para virado para um lado ou para o outro ---------- */
+@property --sd{syntax:"<number>";inherits:false;initial-value:1}
+@property --tl{syntax:"<angle>";inherits:false;initial-value:25deg}
+body[data-s=pl] #stage #cu{transition:--sd 1.1s cubic-bezier(.4,0,.2,1),--tl 1.1s;animation:cubeIdle2 9s ease-in-out infinite!important;rotate:-.53 calc(-.85*var(--sd)) 0 var(--tl)}
+body[data-s=pl].bigon #stage #cu{animation:cubeIdle2S 9s ease-in-out infinite!important}
+@keyframes cubeIdle2{0%,100%{rotate:-.6 calc(-.8*var(--sd)) 0 calc(var(--tl) - 3deg)}50%{rotate:-.45 calc(-.89*var(--sd)) 0 calc(var(--tl) + 4deg)}}
+@keyframes cubeIdle2S{0%,100%{rotate:-.6 calc(-.8*var(--sd)) 0 11deg}50%{rotate:-.45 calc(-.89*var(--sd)) 0 15deg}}
+html.lite body[data-s=pl] #stage #cu{animation:none!important}
+/* segurando o cubo: ele para de balançar para você ler */
+body.cuhold #stage #cu,body.cuhold #stage #cu>.f:after{animation-play-state:paused!important}
+@media (min-width:701px){
+ body[data-s=pl] #stage #st{translate:0 -11%}
+ body[data-s=pl] #stage #cu{scale:.86}
+}
+/* letra grande: maior e quase de ponta a ponta (da nota musical até a engrenagem) */
+@media (min-width:701px) and (orientation:landscape){
+ #bigly{width:calc(100vw - 2*(clamp(56px,7vw,120px)))!important;top:44%!important}
+ #bigly h2{font-size:min(var(--lw,10.5vw),var(--lh,16vh))!important;line-height:1.02!important}
+ #bigly p{font-size:min(2.9vw,4.3vh)!important}
+}
+/* vidro do cubo: opacidade ajustável nas Configurações (0 = transparente, 1 = opaco) */
+#stage #cu>.f{background:
+  linear-gradient(118deg,transparent 28%,rgba(255,255,255,.13) 40%,rgba(255,255,255,.03) 47%,transparent 56%),
+  radial-gradient(circle at 30% 18%,rgba(255,255,255,.16),transparent 55%),
+  linear-gradient(155deg,color-mix(in srgb,var(--ne) 16%,rgba(14,22,34,calc(.2 + .78*var(--cop,.55)))),rgba(8,12,20,calc(.25 + .73*var(--cop,.55))) 60%,color-mix(in srgb,var(--ne) 12%,rgba(8,12,20,calc(.3 + .68*var(--cop,.55)))))!important}
+html.light #stage #cu>.f{background:linear-gradient(118deg,transparent 28%,rgba(255,255,255,.6) 40%,transparent 56%),radial-gradient(circle at 30% 18%,rgba(255,255,255,.9),transparent 60%),linear-gradient(155deg,rgba(255,255,255,calc(.35 + .6*var(--cop,.55))),color-mix(in srgb,var(--a) 16%,rgba(240,246,250,calc(.4 + .55*var(--cop,.55)))))!important}
+/* modo claro: mais brilho e cor no vidro */
+html.light #stage #cu>.f{box-shadow:inset 0 0 0 1.5px #fff,inset 0 0 0 4px color-mix(in srgb,var(--a) 45%,transparent),inset 0 0 calc(var(--cs)*.12) color-mix(in srgb,var(--a) 28%,transparent),0 0 calc(var(--cs)*.06) color-mix(in srgb,var(--a) 45%,transparent),0 calc(var(--cs)*.04) calc(var(--cs)*.08) rgba(0,30,40,.25)!important}
+
+/* ---------- marcador das faces: só o nome, na cor do tema ---------- */
+#fdots{top:calc(-30px*var(--k))!important;gap:.5em!important}
+#fdots b{margin-left:.7em!important;font:800 calc(17px*var(--k)) "Exo 2",sans-serif!important;letter-spacing:.02em;opacity:1!important;color:var(--ne,var(--a));text-shadow:0 0 .6em color-mix(in srgb,var(--ne,var(--a)) 55%,transparent)}
+html.light #fdots b{color:var(--a);text-shadow:none}
+
+/* ---------- Próximas: cartões lado a lado, como teclas saltadas ---------- */
+#ql{display:grid!important;grid-template-columns:repeat(auto-fill,minmax(6.6em,1fr));gap:1em .8em;align-content:start;padding:.3em .5em 1.4em .2em}
+#ql>.em{grid-column:1/-1;margin:.2em 0 -.3em}
+#ql .ti{position:relative;display:flex!important;flex-direction:column;align-items:stretch;gap:.45em!important;padding:.5em .5em .6em!important;border-radius:.9em;cursor:pointer;min-width:0;
+ background:linear-gradient(170deg,rgba(255,255,255,.16),rgba(255,255,255,.04) 55%,rgba(0,0,0,.1)),color-mix(in srgb,var(--ne,var(--a)) 10%,#141a20);
+ box-shadow:inset 0 1px 0 rgba(255,255,255,.35),inset 0 0 0 1px rgba(255,255,255,.12),0 .38em 0 color-mix(in srgb,var(--ne,var(--a)) 38%,#05080b),0 .38em 0 1px rgba(0,0,0,.35),0 .75em 1em rgba(0,0,0,.45);
+ transform:translateY(-.15em);transition:transform .12s,box-shadow .12s}
+#ql .ti:hover{transform:translateY(-.3em);box-shadow:inset 0 1px 0 rgba(255,255,255,.4),inset 0 0 0 1px color-mix(in srgb,var(--ne,var(--a)) 60%,transparent),0 .5em 0 color-mix(in srgb,var(--ne,var(--a)) 45%,#05080b),0 .5em 0 1px rgba(0,0,0,.35),0 1em 1.3em rgba(0,0,0,.45),0 0 1em color-mix(in srgb,var(--ne,var(--a)) 35%,transparent)}
+#ql .ti:active{transform:translateY(.2em);box-shadow:inset 0 1px 0 rgba(255,255,255,.25),0 .05em 0 color-mix(in srgb,var(--ne,var(--a)) 38%,#05080b),0 .2em .4em rgba(0,0,0,.4)}
+#ql .ti .c{width:100%!important;height:auto!important;aspect-ratio:1;border-radius:.6em;box-shadow:0 .15em .4em rgba(0,0,0,.4)}
+#ql .ti .t{min-width:0}
+#ql .ti b{display:block;font-size:1.02em!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#ql .ti span{display:block;font-size:.82em!important;opacity:.72;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#ql .ti .ac{position:absolute;top:.3em;right:.3em;flex-direction:column}
+html.light #ql .ti{background:linear-gradient(170deg,#fff,color-mix(in srgb,var(--a) 8%,#f3f7f9));box-shadow:inset 0 1px 0 #fff,inset 0 0 0 1px rgba(0,0,0,.06),0 .38em 0 color-mix(in srgb,var(--a) 45%,#9fb3bd),0 .75em 1em rgba(0,40,50,.18)}
+
+/* ---------- número da fila na cor do tema (some quando é zero) ---------- */
+#em{background:var(--ne,var(--a))!important;color:#06120a!important;box-shadow:0 0 .6em color-mix(in srgb,var(--ne,var(--a)) 70%,transparent)!important;font-weight:800!important}
+#em.z{display:none!important}
+
+/* ---------- volume: número ao lado da barra, centralizado com a bolinha; some no mudo ---------- */
+#stage .cb .vo #vpc,.vo #vpc{position:absolute!important;top:auto!important;bottom:calc(50% + 14px)!important;right:auto!important;margin:0!important;transform:translateX(-50%)!important;opacity:1!important;font:700 13px "Exo 2",sans-serif!important;text-align:center;transition:none!important}
+.vo.mu #vpc{opacity:0!important}
+#vi{outline:none!important;caret-color:transparent}
+
+/* ---------- botões: sem anel branco de foco depois do clique ---------- */
+#stage button:focus:not(:focus-visible),#wait button:focus:not(:focus-visible){outline:none}
+
+/* ---------- Configurações: bloco do modo palco ---------- */
+#cfgpalh{margin:18px 0 6px;padding:12px 14px;border-radius:14px;background:color-mix(in srgb,var(--neon,var(--a)) 10%,transparent);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--neon,var(--a)) 40%,transparent)}
+#cfgpalh b{display:block;font:800 16px "Exo 2",sans-serif;color:var(--neon,var(--a))}
+#cfgpalh span{display:block;margin-top:3px;font:400 12px/1.4 "Chakra Petch",sans-serif;opacity:.8}
+#cfgstg .tlab b,#cfgtr .tlab b,#cfgpip .tlab b,#cfgcop .tlab b{color:var(--neon,var(--a))}
+#cfgpip .tlab small{opacity:.65;font-weight:400}
+#cfgcop{margin-top:14px}
+#cfgcop .cops{display:flex;align-items:center;gap:10px;margin-top:6px}
+#cfgcop .cops small{font:400 11px "Chakra Petch",sans-serif;opacity:.7}
+#cfgcop input{flex:1;accent-color:var(--neon,var(--a))}
+html.light #fdots i{background:rgba(0,40,55,.2)}
+html.light .vo #vpc,html.light #stage .cb .vo #vpc{color:var(--a)!important;text-shadow:none!important}
+
+/* play/pause e anterior/próxima um pouco menores (nada esbarra neles) */
+#stage .tr button{width:46px!important;height:46px!important}
+#stage .tr button.big{width:64px!important;height:64px!important}

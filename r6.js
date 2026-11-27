@@ -111,7 +111,7 @@
         ${st ? `<div><b>${st}</b><span>${st === 1 ? "semana ouvindo" : "semanas seguidas ouvindo"}</span></div>` : ""}
       </div>
       ${d.h ? `<div class="hhl">Em que hora do dia você ouve</div><div class="hbars">${d.h.map((v, i) => `<i style="--v:${(v / mx).toFixed(2)}" title="${i}h: ${v}×"></i>`).join("")}</div><div class="hax"><span>0h</span><span>6h</span><span>12h</span><span>18h</span><span>23h</span></div>` : ""}
-      ${chips(d, fav)}<div class="xsrc">${d.src === "Last.fm" ? "Contagem do Last.fm" : "Contado pelo seu Paredão"}${d.rs || d.rm ? " · ranking do Spotify" : ""}</div>`;
+      ${chips(d, fav)}<div class="xsrc">${d.src === "Last.fm" ? "Contagem do Last.fm" : "Contado pelo seu Paredão, desde que você começou a usar. O Spotify não informa quantas vezes você ouviu; para ver desde sempre, coloque seu usuário do Last.fm em Configurações."}${d.rs || d.rm ? " · ranking do Spotify" : ""}</div>`;
   }
   function chips(d, fav) {
     const c = [];

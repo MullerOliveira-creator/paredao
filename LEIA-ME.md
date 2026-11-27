@@ -142,3 +142,18 @@ Para atualizar no GitHub: suba `index.html`, `spotify.js`, `r5.css`, `r5.js`, `r
 - Botões ⟲10 / ⟳10 da janelinha: anterior / próxima, com a animação do estilo (carta voando, dado rolando, holograma piscando).
 - Arquivos: r11.css, r11.js (+ ajustes em r6.js, pip.js, spotify.js).
 - Configurações → "Modo palco · fundo transparente": Ligado (padrão, só o objeto flutua) / Desligado (painel de vidro atrás). Na janelinha do sistema, Ligado = fundo preto puro.
+
+## Rodada 12
+- Barra de tempo virou um anel em volta do play (arrastar no anel escolhe o ponto da música). O retângulo atrás do cubo sumiu.
+- Cubo: mais alto (não invade os botões), para virado para a esquerda ou para a direita, congela enquanto você segura, opacidade do vidro ajustável.
+- Marcador das faces só com o nome, na cor do tema. Próximas em cartões 3D lado a lado.
+- Letra grande ocupa quase a tela toda (TV/computador).
+- Volume: número ao lado da barra, centralizado; some no mudo. Número da fila na cor do tema (some quando zero).
+- Configurações: bloco "Modo palco" com 1. Estilo, 2. Fundo, 3. Janelinha, 4. Vidro do cubo.
+- Janelinha de vídeo: sem botões desenhados (os controles são os do sistema); a bolha treme/respira.
+- Arquivos: r12.css, r12.js (+ ajustes em r6.js, r9.js, pip.js).
+- 12b: cubo maior (sem invadir os botões), letra maior conforme o tamanho da frase, número do volume em cima da bolinha, play/anterior/próxima menores.
+
+## Rodada 13 — Paredão para Windows
+- r13.css / r13.js: quando a página abre dentro do programa de Windows, só o mini player aparece, sem fundo, com a barrinha (arrastar, −, +, configurações, fechar).
+- O programa (Paredao-Player-portatil.exe) abre o site oficial; no navegador comum nada muda.

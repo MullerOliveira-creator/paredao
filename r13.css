@@ -1,0 +1,20 @@
+/* Paredão para Windows: só o mini player, sem fundo nenhum */
+html.desk,html.desk body{background:transparent!important;overflow:hidden!important}
+html.desk body:before,html.desk body:after{display:none!important}
+html.desk body *{visibility:hidden!important}
+html.desk #stg,html.desk #stg *,html.desk #dtb,html.desk #dtb *{visibility:visible!important}
+html.desk #stg{font-size:14px!important;display:block!important;position:fixed!important;left:50%!important;top:calc(50% + 18px)!important;right:auto!important;bottom:auto!important;translate:-50% -50%;cursor:default!important}
+html.desk #toast,html.desk .toast{display:none!important}
+/* barrinha (aparece com o mouse por cima) */
+#dtb{display:none}
+html.desk #dtb,html.deskfull #dtb{display:flex;position:fixed;left:50%;top:6px;translate:-50% 0;z-index:99999;align-items:center;gap:4px;padding:4px 6px;border-radius:12px;
+ background:rgba(10,14,18,.78);box-shadow:inset 0 0 0 1px rgba(255,255,255,.18),0 4px 14px rgba(0,0,0,.4);opacity:0;transition:opacity .2s}
+html.desk:hover #dtb,html.deskfull #dtb{opacity:1}
+#dtb .dh{-webkit-app-region:drag;app-region:drag;cursor:move;display:grid;place-items:center;width:26px;height:26px;color:rgba(255,255,255,.75)}
+#dtb button{all:unset;cursor:pointer;display:grid;place-items:center;width:26px;height:26px;border-radius:8px;color:#fff}
+#dtb button:hover{background:rgba(255,255,255,.14)}
+#dtb svg{width:15px;height:15px;fill:currentColor}
+#dtb .s{fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+#dtb [data-d=x]:hover{background:#d33}
+/* player completo dentro do programa: a barrinha serve para arrastar a janela */
+html.deskfull #dtb{top:4px}

@@ -376,6 +376,7 @@ html.light #pipc button{color:var(--a);background:radial-gradient(circle at 35% 
     for (let gx = 0; gx <= W; gx += 40) { x.beginPath(); x.moveTo(gx, 0); x.lineTo(gx, H); x.stroke(); }
     for (let gy = 0; gy <= H; gy += 40) { x.beginPath(); x.moveTo(0, gy); x.lineTo(W, gy); x.stroke(); }
     const R = 150, cx = W / 2, cy = H / 2 + Math.sin(tm * 1.05) * 6;
+    { const w = Math.sin(tm * 1.7) * .018, w2 = Math.sin(tm * 2.3 + 1) * .01; x.translate(cx, cy); x.scale(1 + w + w2, 1 - w + w2 * .5); x.translate(-cx, -cy); } // a bolha treme e respira
     const im = cover(k);
     // interior um pouco mais escuro (como a bolha de verdade sobre o fundo)
     const tint = x.createRadialGradient(cx, cy, 0, cx, cy, R); tint.addColorStop(0, "rgba(25,12,45,.42)"); tint.addColorStop(.85, "rgba(25,12,45,.2)"); tint.addColorStop(1, "rgba(25,12,45,0)");
@@ -399,15 +400,9 @@ html.light #pipc button{color:var(--a);background:radial-gradient(circle at 35% 
     x.fillStyle = hl; x.beginPath(); x.arc(0, 0, 34, 0, 6.283); x.fill(); x.restore();
     // textos
     x.textAlign = "center"; x.shadowColor = "rgba(0,0,0,.45)"; x.shadowBlur = 6;
-    x.fillStyle = "#fff"; x.font = '700 24px "Chakra Petch",sans-serif'; x.fillText(fit(t[0], R * 1.45), cx, cy - R * .27);
-    x.fillStyle = "rgba(255,255,255,.82)"; x.font = '400 18px "Chakra Petch",sans-serif'; x.fillText(fit(t[1] || "", R * 1.45), cx, cy - R * .05);
+    x.fillStyle = "#fff"; x.font = '700 26px "Chakra Petch",sans-serif'; x.fillText(fit(t[0], R * 1.45), cx, cy - R * .02);
+    x.fillStyle = "rgba(255,255,255,.82)"; x.font = '400 18px "Chakra Petch",sans-serif'; x.fillText(fit(t[1] || "", R * 1.45), cx, cy + R * .2);
     x.shadowBlur = 0; x.textAlign = "left";
-    // botão de vidro
-    const by = cy + R * .26; x.fillStyle = "rgba(255,255,255,.16)"; x.beginPath(); x.arc(cx, by, 28, 0, 6.283); x.fill();
-    x.strokeStyle = "rgba(255,255,255,.35)"; x.lineWidth = 1; x.stroke();
-    x.fillStyle = "#fff";
-    if (S.p) { rr(cx - 10, by - 11, 7, 22, 2); x.fill(); rr(cx + 3, by - 11, 7, 22, 2); x.fill(); }
-    else { x.beginPath(); x.moveTo(cx - 8, by - 14); x.lineTo(cx + 14, by); x.lineTo(cx - 8, by + 14); x.closePath(); x.fill(); }
     // progresso fininho embaixo da bolha
     const d = (typeof D !== "undefined" ? D : 0) || 0, pr = d ? Math.min(1, S.t / d) : 0;
     x.fillStyle = "rgba(255,255,255,.15)"; rr(cx - 90, cy + R - 30, 180, 4, 2); x.fill();
@@ -495,7 +490,7 @@ html.light #pipc button{color:var(--a);background:radial-gradient(circle at 35% 
     // cápsula de controles
     const pg = x.createLinearGradient(0, 252, 0, 316); pg.addColorStop(0, "#2a2d33"); pg.addColorStop(1, "#0d0f12");
     x.fillStyle = pg; rr(cx - 128, 250, 256, 68, 34); x.fill(); x.lineWidth = 1.5; x.strokeStyle = "rgba(255,255,255,.25)"; x.stroke();
-    sphere(cx - 76, 284, 22, "pv", c); sphere(cx, 284, 28, "pp", c, true); sphere(cx + 76, 284, 22, "nx", c);
+    { const d = (typeof D !== "undefined" ? D : 0) || 0; x.textAlign = "center"; x.fillStyle = "#fff"; x.font = '600 24px "Chakra Petch",sans-serif'; x.save(); x.shadowColor = c.ne; x.shadowBlur = 10; x.fillText(mmss(S.t) + "  /  " + mmss(d), cx, 293); x.restore(); x.textAlign = "left"; }
   };
   // Dado de controles (cubo de verdade, projetado em 3D)
   let dRy = -90, dRyT = 0;
@@ -559,9 +554,8 @@ html.light #pipc button{color:var(--a);background:radial-gradient(circle at 35% 
     x.textAlign = "center"; x.fillStyle = "#eef3f5"; x.font = '700 19px "Chakra Petch",sans-serif'; x.fillText(fit(t[0], 210), cx, cy - 2);
     const n = 22, pr = pr01();
     for (let i = 0; i < n; i++) { const h = 6 + 18 * (S.p ? beat(tm, i) : .25), bx = cx - 92 + i * (184 / (n - 1)); x.fillStyle = i < Math.round(pr * n) ? c.ne : "rgba(255,255,255,.28)"; rr(bx - 2.5, cy + 24 - h / 2, 5, h, 2.5); x.fill(); }
-    const d = (typeof D !== "undefined" ? D : 0) || 0; x.fillStyle = "rgba(235,242,245,.85)"; x.font = '500 18px ui-monospace,Menlo,monospace'; x.fillText(mmss(S.t) + " / " + mmss(d), cx, cy + 62);
+    const d = (typeof D !== "undefined" ? D : 0) || 0; x.fillStyle = "rgba(235,242,245,.85)"; x.font = '500 18px ui-monospace,Menlo,monospace'; x.fillText(mmss(S.t) + " / " + mmss(d), cx, cy + 74);
     x.textAlign = "left";
-    sphere(cx - 58, cy + 100, 21, "pv", c); sphere(cx, cy + 100, 27, "pp", c, true); sphere(cx + 58, cy + 100, 21, "nx", c);
   };
   // Baralho de capas: ⟲10 e ⟳10 trocam a carta
   function card(c, k, cx, cy, w, h, rot, alpha, full) {
@@ -580,14 +574,14 @@ html.light #pipc button{color:var(--a);background:radial-gradient(circle at 35% 
       const pr = k === S.i ? pr01() : 1; x.fillStyle = "rgba(255,255,255,.16)"; rr(X0, y + 56, w - 36, 5, 2.5); x.fill();
       x.save(); x.shadowColor = c.ne; x.shadowBlur = 8; x.fillStyle = c.ne; rr(X0, y + 56, Math.max(5, (w - 36) * pr), 5, 2.5); x.fill(); x.restore();
       x.fillStyle = "rgba(10,12,15,.5)"; x.beginPath(); x.arc(w / 2 - 30, -h / 2 + 30, 18, 0, 6.283); x.fill(); icon("fv", w / 2 - 30, -h / 2 + 30, 20, c.ne);
-      if (k === S.i) { const by = h / 2 - 40; sphere(-58, by, 20, "pv", c); sphere(0, by, 26, "pp", c, true); sphere(58, by, 20, "nx", c); }
+      if (k === S.i) { const d = (typeof D !== "undefined" ? D : 0) || 0; x.fillStyle = "rgba(255,255,255,.75)"; x.font = '500 17px "Chakra Petch",sans-serif'; x.fillText(mmss(S.t), X0, y + 86); const e2 = mmss(d); x.fillText(e2, w / 2 - 18 - x.measureText(e2).width, y + 86); }
     }
     x.restore();
   }
   DRAW.baralho = function (c, k, t, tm) {
     const p = chg(tm), e = ease(p);
     x.fillStyle = TBG(c); x.fillRect(0, 0, W, H);
-    const cx = W / 2, cy = 250, w = 270, h = 380;
+    const cx = W / 2, cy = 250, w = 270, h = 340;
     const n1 = (S.ql && S.ql[0] != null) ? S.ql[0] : stepI(k, 1), n2 = (S.ql && S.ql[1] != null) ? S.ql[1] : stepI(n1, 1);
     card(c, n2, cx + 18, cy + 10, w, h, .12, 1, false);
     card(c, n1, cx - 14, cy + 4, w, h, -.1, 1, false);
@@ -625,7 +619,7 @@ html.light #pipc button{color:var(--a);background:radial-gradient(circle at 35% 
       wi++;
     });
     x.fillStyle = "rgba(235,242,245,.82)"; x.font = '400 24px "Chakra Petch",sans-serif'; x.fillText(fit(t[1] || "", 420), 40, 286);
-    sphere(W - 74, 278, 30, "pp", c, true);
+    for (let i = 0; i < 5; i++) { const hh = 8 + 30 * beat(tm, i); x.save(); x.shadowColor = c.ne; x.shadowBlur = 8; x.fillStyle = c.ne; rr(W - 120 + i * 14, 292 - hh, 8, hh, 3); x.fill(); x.restore(); }
     x.save(); x.shadowColor = c.ne; x.shadowBlur = 10; x.fillStyle = c.ne; x.fillRect(0, H - 5, W * pr01(), 5); x.restore();
   };
   DRAW.toca = DRAW.vinil;
