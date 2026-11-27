@@ -13,6 +13,7 @@
   const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => "&#" + c.charCodeAt(0) + ";");
   const SP = [];                       // metadados do Spotify por índice de T
   const SPOT = { on: false, sdkOk: false, dev: null, target: null, devs: [], player: null, lfm: LS.get("pd_lfm") || "" };
+  SPOT.SP = SP;
   window.SPOT = SPOT;
   let tok = {};
   try { tok = JSON.parse(LS.get("pd_tok") || "{}") || {}; } catch (e) { tok = {}; }
@@ -61,10 +62,7 @@ html.light #cfgb{color:#0c2533}
   const cid = () => LS.get("pd_cid") || (window.PD_CONFIG && PD_CONFIG.clientId) || "";
   $s("cfgru").textContent = REDIRECT;
   const status = t => { const n = $s("spst"); if (n) n.textContent = t; };
-  const drawPal = () => {
-    $s("cfgpal").innerHTML = P.map((p, j) => `<button type="button" data-pj="${j}" title="${esc(p.n)}" aria-label="${esc(p.n)}" class="${j === pi ? "on" : ""}" style="background:linear-gradient(135deg,${p.bg} 0 50%,${p.a} 50% 100%)"></button>`).join("");
-    $s("cfgpn").textContent = "Paleta: " + P[pi].n;
-  };
+  const drawPal = () => { if (window.drawTheme) drawTheme(); };
   $s("cfgpal").addEventListener("click", e => { const b = e.target.closest("[data-pj]"); if (b) { setP(+b.dataset.pj); drawPal(); } });
   const openCfg = () => { drawPal(); $s("cfgid").value = cid() || ""; $s("cfglf").value = SPOT.lfm; $s("cfg").classList.add("on"); };
   const closeCfg = () => $s("cfg").classList.remove("on");
@@ -129,15 +127,23 @@ html.light #cfgb{color:#0c2533}
     const a = await access();
     if (!a) throw new Error("Sem login");
     const url = "https://api.spotify.com/v1" + path + (q ? "?" + new URLSearchParams(q) : "");
+    if (Date.now() < SPOT.pauseUntil) throw Object.assign(new Error("O Spotify pediu uma pausa; tente daqui a pouco"), { status: 429 });
     const r = await fetch(url, { method, headers: Object.assign({ Authorization: "Bearer " + a }, body ? { "Content-Type": "application/json" } : {}), body: body ? JSON.stringify(body) : undefined });
-    if (r.status === 429) { const w = +(r.headers.get("Retry-After") || 2); await new Promise(s => setTimeout(s, Math.min(w, 30) * 1000)); return api(method, path, body, q); }
+    if (r.status === 429) {
+      // sem tentar de novo em cadeia: todo o app espera
+      let quota = false; try { quota = /QUOTA/.test(await r.clone().text()); } catch (e) {}
+      const w = +(r.headers.get("Retry-After") || 0);
+      SPOT.pauseUntil = Date.now() + Math.max(w || 0, quota ? 120 : 8) * 1000;
+      if (quota && !SPOT.quotaSaid) { SPOT.quotaSaid = 1; say("O Spotify limitou o uso por enquanto. O Paredão vai esperar e tentar de novo sozinho."); }
+      throw Object.assign(new Error("O Spotify pediu uma pausa"), { status: 429 });
+    }
     if (r.status === 204 || r.status === 202) return null;
     const t = await r.text();
     let j = null; try { j = t ? JSON.parse(t) : null; } catch (e) {}
     if (!r.ok) { const m = (j && j.error && (j.error.message || j.error)) || ("HTTP " + r.status); throw Object.assign(new Error(m), { status: r.status }); }
     return j;
   }
-  SPOT.api = api;
+  SPOT.api = api; SPOT.pauseUntil = 0;
 
   /* ---------- catálogo ---------- */
   const DEF = "#1fd3f2";
@@ -148,12 +154,22 @@ html.light #cfgb{color:#0c2533}
       try {
         const c = document.createElement("canvas"); c.width = c.height = 24;
         const x = c.getContext("2d"); x.drawImage(im, 0, 0, 24, 24);
-        const d = x.getImageData(0, 0, 24, 24).data; let best = null, bs = -1;
+        // cor principal da capa: a faixa de matiz que mais aparece (pesada pela saturação)
+        const d = x.getImageData(0, 0, 24, 24).data, bins = Array.from({ length: 12 }, () => ({ w: 0, r: 0, g: 0, b: 0 }));
         for (let p = 0; p < d.length; p += 4) {
-          const r = d[p], g = d[p + 1], b = d[p + 2], mx = Math.max(r, g, b), mn = Math.min(r, g, b), s = mx ? (mx - mn) / mx : 0, sc = s * (mx / 255);
-          if (sc > bs && mx > 90) { bs = sc; best = [r, g, b]; }
+          const r = d[p], g = d[p + 1], b = d[p + 2], mx = Math.max(r, g, b), mn = Math.min(r, g, b), s = mx ? (mx - mn) / mx : 0;
+          if (mx < 60 || s < .22) continue;
+          let h = 0; const c = mx - mn;
+          if (c) h = mx === r ? ((g - b) / c + 6) % 6 : mx === g ? (b - r) / c + 2 : (r - g) / c + 4;
+          const B = bins[Math.floor(h * 2) % 12], w = s * s * (mx / 255);
+          B.w += w; B.r += r * w; B.g += g * w; B.b += b * w;
         }
-        if (best && bs > .25) TC[i] = "#" + best.map(v => v.toString(16).padStart(2, "0")).join("");
+        const top = bins.reduce((a, c) => c.w > a.w ? c : a, { w: 0 });
+        if (top.w > 1.2) {
+          let rgb = [top.r / top.w, top.g / top.w, top.b / top.w];
+          const mx = Math.max(...rgb); if (mx < 200) rgb = rgb.map(v => v * 200 / mx);   // garante brilho para o anel
+          TC[i] = "#" + rgb.map(v => Math.min(255, Math.round(v)).toString(16).padStart(2, "0")).join("");
+        }
       } catch (e) {}
     };
     im.src = m.img;
@@ -296,9 +312,12 @@ html.light #cfgb{color:#0c2533}
     vTimer = setTimeout(() => {
       if (sdkActive()) { SPOT.player.setVolume(Math.max(0, Math.min(1, v))).catch(() => {}); return; }
       api("PUT", "/me/player/volume", null, Object.assign({ volume_percent: Math.round(v * 100) }, tgt() || {})).catch(fail);
+      const d = curDev(); if (d) d.volume_percent = Math.round(v * 100);
     }, 150);
   };
-  SPOT.queue = k => { const m = SP[k]; if (!m) return; api("POST", "/me/player/queue", null, Object.assign({ uri: m.uri }, tgt() || {})).catch(fail); };
+  SPOT.queue = k => { window.PQ ? PQ.add(k) : S.ql.push(k); };
+  SPOT.qDirty = () => { SPOT.dirty = true; };
+  SPOT.playContext = uri => { api("PUT", "/me/player/play", { context_uri: uri }, tgt()).then(firstVolume).catch(fail); };
   SPOT.like = (k, on) => { const m = SP[k]; if (!m) return; api(on ? "PUT" : "DELETE", "/me/library", null, { uris: m.uri }).catch(fail); };
   SPOT.transfer = j => {
     const d = SPOT.devs[j]; if (!d) return;
@@ -316,18 +335,25 @@ html.light #cfgb{color:#0c2533}
   playK = function (k) {
     _playK(k);
     if (!SPOT.on) return;
-    let rest = S.ql.slice(0, 20);
-    if (!rest.length) rest = REC.filter(x => x !== k && kind(x) === kind(k)).concat(T.map((t, i) => i).filter(i => i !== k && kind(i) === kind(k) && !REC.includes(i))).slice(0, 30);
+    S.ql = S.ql.filter(x => x !== k);
+    const rest = S.ql.concat(window.PQ ? PQ.auto(20) : []).filter(x => x !== k).slice(0, 30);
+    SPOT.dirty = false;
     SPOT.play(k, rest);
   };
 
   function setState(i, pos, dur, playing, nexts) {
     if (i < 0) return;
-    if (i !== S.i) { S.i = i; lyrics(i); }
+    if (i !== S.i) {
+      const prevI = S.i; S.i = i; lyrics(i);
+      // a fila do Paredão manda: se o Spotify foi para outra música, corrige
+      if (S.ql.length && S.ql[0] === i) S.ql.shift();
+      else if (SPOT.dirty && S.ql.length && prevI != null) { SPOT.dirty = false; const k = S.ql.shift(); setTimeout(() => playK(k), 50); }
+      SPOT.dirty = false;
+      window.PQ && PQ.changed && PQ.changed();
+    }
     if (flipping !== 1) S.t = Math.min(pos, dur || pos);
     if (dur) D = dur;
     S.p = playing ? 1 : 0;
-    if (nexts) { S.ql = nexts.filter(x => x >= 0).slice(0, 5); const em = document.getElementById("em"); if (em) em.textContent = S.ql.length; }
     started = 1;
     media(i, playing);
   }
@@ -355,18 +381,23 @@ html.light #cfgb{color:#0c2533}
     // em celulares o navegador exige um toque para liberar áudio
     document.addEventListener("pointerdown", () => { try { SPOT.player && SPOT.player.activateElement(); } catch (e) {} }, { once: true });
   }
+  let polling = false, lastApiPoll = 0;
   async function poll() {
-    if (!SPOT.on || document.hidden) return;
+    if (!SPOT.on || document.hidden || polling) return;
+    polling = true;
     try {
       const fresh = Date.now() - (SPOT.vt || 0) > 3000;
       if (sdkActive()) {
         const st = await SPOT.player.getCurrentState();
         if (st) {
           applySDK(st); SPOT.curName = "Este navegador";
-          if (fresh) { const v = await SPOT.player.getVolume().catch(() => null); if (v != null && !S.m) S.v = v; }
+          if (fresh) { const v = await SPOT.player.getVolume().catch(() => null); if (v != null && !S.m) S.v = Math.round(v * 100) / 100; }
           status(statusTxt()); return;
         }
       }
+      // aparelho remoto: consulta a cada 5 s tocando, 15 s pausado
+      if (Date.now() - lastApiPoll < (S.p ? 5000 : 15000) || Date.now() < SPOT.pauseUntil) return;
+      lastApiPoll = Date.now();
       const r = await api("GET", "/me/player");
       if (r && r.item) {
         const i = addItem(r.item);
@@ -376,7 +407,7 @@ html.light #cfgb{color:#0c2533}
         setState(i, (r.progress_ms || 0) / 1000, (r.item.duration_ms || 0) / 1000, r.is_playing);
       } else SPOT.curName = null;
       status(statusTxt());
-    } catch (e) {}
+    } catch (e) {} finally { polling = false; }
   }
   async function refreshDevices() {
     try {
@@ -384,12 +415,10 @@ html.light #cfgb{color:#0c2533}
       // esconde sessões antigas do próprio Paredão (abas recarregadas)
       SPOT.devs = ((r && r.devices) || []).filter(d => d.id === SPOT.dev || d.is_active || d.name !== "Paredão Player");
       if (!SPOT.devs.length || dm.classList.contains("on")) return;
-      DV.splice(0, DV.length, ...SPOT.devs.map(d => (d.id === SPOT.dev ? "Este navegador" : d.name) + (d.is_active ? " ●" : "")));
+      DV.splice(0, DV.length, ...SPOT.devs.map(d => d.id === SPOT.dev ? "Este navegador" : d.name));
       const a = SPOT.devs.findIndex(d => d.is_active); S.dev = a >= 0 ? a : Math.max(0, SPOT.devs.findIndex(d => d.id === SPOT.dev));
-      dm.innerHTML = SPOT.devs.map((d, j) => {
-        const v = d.volume_percent == null ? 10 : d.volume_percent, ok = d.supports_volume !== false;
-        return `<div data-j="${j}" class="dv"><span>${esc(DV[j])}</span><input type="range" min="0" max="100" value="${v}" data-dv="${esc(d.id)}" style="--v:${v}%" ${ok ? "" : "disabled"} title="${ok ? "Volume de " + esc(d.name) : "Este aparelho não aceita volume pelo Spotify"}" aria-label="Volume de ${esc(d.name)}"></div>`;
-      }).join(""); ud();
+      if (window.R5dev) dm.innerHTML = R5dev(SPOT.devs.map((d, j) => ({ n: DV[j], id: d.id, t: d.type, self: d.id === SPOT.dev, v: d.volume_percent, ok: d.supports_volume !== false })), a >= 0 ? a : S.dev);
+      ud(); dm.querySelectorAll(".dv").forEach((x, j) => x.classList.toggle("on", j === a));
     } catch (e) {}
   }
   document.addEventListener("pointerdown", e => { if (SPOT.on && e.target.closest("[data-a=d]") && !dm.classList.contains("on")) refreshDevices(); });
@@ -403,6 +432,7 @@ html.light #cfgb{color:#0c2533}
       if (id === SPOT.dev && SPOT.player) SPOT.player.setVolume(v / 100).catch(() => {});
       else api("PUT", "/me/player/volume", null, { volume_percent: v, device_id: id }).catch(fail);
       if (id === (SPOT.target || SPOT.dev)) { S.v = v / 100; SPOT.vt = Date.now(); }
+      const d = SPOT.devs.find(x => x.id === id); if (d) d.volume_percent = v;
     }, 150);
   });
 
@@ -525,12 +555,13 @@ html.light #cfgb{color:#0c2533}
     const L = [k];
     try {
       if (m.artistId && !kind(k)) {
-        const al = await api("GET", "/artists/" + m.artistId + "/albums", null, { include_groups: "album,single", limit: 10 });
-        for (const a of (al.items || []).slice(0, 4)) {
-          const tr = await api("GET", "/albums/" + a.id + "/tracks", null, { limit: 10 });
-          (tr.items || []).forEach(t => { const i = addItem(t, { album: a }); if (i >= 0 && !L.includes(i)) L.push(i); });
-          if (L.length >= 12) break;
+        for (const off of [0, 10]) {
+          const r = await api("GET", "/search", null, { q: 'artist:"' + m.artist + '"', type: "track", limit: 10, offset: off });
+          ((r.tracks && r.tracks.items) || []).filter(t => t && (t.artists || []).some(a => a.id === m.artistId)).forEach(t => { const i = addItem(t); if (i >= 0 && !L.includes(i)) L.push(i); });
+          if (L.length >= 10) break;
         }
+        // também o que já está no catálogo
+        T.forEach((t, i) => { if (SP[i] && SP[i].artistId === m.artistId && !L.includes(i)) L.push(i); });
       } else {
         const res = await api("GET", "/search", null, { q: m.artist, type: "episode", limit: 10 });
         ((res.episodes || {}).items || []).forEach(t => { const i = addItem(t); if (i >= 0 && !L.includes(i)) L.push(i); });
@@ -538,6 +569,8 @@ html.light #cfgb{color:#0c2533}
     } catch (e) { fail(e); }
     for (let i = L.length - 1; i > 1; i--) { const j = 1 + (Math.random() * i | 0); [L[i], L[j]] = [L[j], L[i]]; }
     if (RAD) killRad();
+    if (L.length < 2) { say("Não achei outras de " + m.artist + " agora"); return; }
+    window.ARTM = { name: m.artist, pool: L.slice() };
     roll(L.slice(0, 6));
     $("#ws").textContent = "Mais de " + m.artist;
   };
@@ -561,8 +594,8 @@ html.light #cfgb{color:#0c2533}
       if (!ok) say("Não encontrei músicas na sua conta; segue o catálogo de exemplo.");
       status(statusTxt());
       loadSDK(); refreshDevices(); poll();
-      setInterval(poll, 2500);
-      setInterval(refreshDevices, 20000);
+      setInterval(poll, 1000);
+      setInterval(() => { if (!document.hidden) refreshDevices(); }, 90000);
       if (document.body.dataset.s === "wait") openWait("");
     } catch (e) {
       status("Não consegui falar com o Spotify: " + e.message + ". Confira o Client ID e se a sua conta está em User Management.");

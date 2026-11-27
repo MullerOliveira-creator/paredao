@@ -81,3 +81,30 @@ Sem a chave, a Rádio usa o mesmo artista e o mesmo período de lançamento.
 - Cada aparelho tem uma barrinha de volume própria no menu "Dispositivos".
 - Na primeira vez que um aparelho toca pelo Paredão, ele começa em 10%.
 - Alguns aparelhos (ex.: Echo Dot) não aceitam volume pelo Spotify; aí use o volume do próprio aparelho.
+
+## Rodada 5 (novidades)
+
+- Começa grande: o Paredão se ajusta ao tamanho da tela (TV, notebook, Echo, celular) e pede tela cheia no primeiro toque.
+- Engrenagem (cores e Spotify) e casinha (voltar ao início) em vidro, nas cores do tema, em todas as telas.
+- Fila do próprio Paredão: adicionar, tirar (×), subir/descer (↑ ↓) e tocar direto. Botão **Fila** no canto de baixo da tela de espera.
+- Botão **Playlists**: as suas playlists e busca de playlists no Spotify; toca a playlist inteira.
+- Letra grande saindo do cubo; gire o cubo deslizando o dedo ou com a rodinha do mouse.
+- Consultas ao Spotify bem mais leves (evita o bloqueio "muitos pedidos").
+
+Para atualizar no GitHub: suba `index.html`, `spotify.js`, `r5.css`, `r5.js` e a pasta `fonts` inteira. **Não** substitua o `config.js` (ele já tem o seu Client ID).
+
+## Rodada 6 (novidades)
+
+- Fonte Chakra Petch em tudo (vem junto com o site).
+- Cores em duas etapas: fundo **Claro** ou **Escuro** + **cor neon** à parte (engrenagem).
+- Botões: casinha (início) e elipse "Hora do Show" (tela de espera) no canto esquerdo; dado de vidro para embaralhar.
+- Dispositivos em cartões de vidro, com o % de cada aparelho e o volume do selecionado.
+- Faces novas do cubo: **Sua história com esta música** (cima), **Sobre o artista** (baixo) e **O que a letra quer dizer** (esquerda, precisa da chave do Genius).
+- Modo palco escolhível nas configurações: Cápsula, Paredão, Toca-discos, Fita cassete, Display de som automotivo, Ingresso, Ilha dinâmica, Painel de aeroporto e Holograma.
+
+Para atualizar no GitHub: suba `index.html`, `spotify.js`, `r5.css`, `r5.js`, `r6.js` e a pasta `fonts` inteira (pode apagar os arquivos `saira-…` antigos da pasta `fonts` no GitHub). **Não** substitua o `config.js`.
+
+### Pop-up no Android (rodada 6b)
+- No Android (e onde só existe picture-in-picture de vídeo), o botão de pop-up abre uma janelinha flutuante do sistema com capa, música, artista e progresso.
+- Tocar/pausar/voltar/avançar aparecem como botões nativos da janelinha.
+- Ícone da tela de espera: nota + onda sonora no estilo da casinha. Face "Sua história" no layout novo (Last.fm + top do Spotify).
