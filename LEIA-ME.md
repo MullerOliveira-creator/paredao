@@ -120,3 +120,25 @@ Para atualizar no GitHub: suba `index.html`, `spotify.js`, `r5.css`, `r5.js`, `r
 - Pop-up "Sem barra" (padrão): no computador também usa a janelinha de vídeo, sem a barra do Chrome; "Com botões" volta a usar a janela com a barra. Escolha em Configurações → Pop-up.
 - Rodada 8 (r8.css): esferas e controles do player no vidro do play; botões com texto em pílula de vidro; cartões com contorno neon no escolhido; Salvar em neon cheio.
 - Configurações: painel não passa mais da borda de baixo (o Salvar ficava escondido).
+- Shuffle com o dado D2 (dois dados) e Salvar com o disquete S2, os dois no vidro do play.
+
+### Rodada 9
+- Spotify: consultas caem de ~760/hora para ~120–200/hora por tela aberta (o progresso anda sozinho; consulta no fim da música, depois de um comando e a cada 25 s; parado 45 s; sem mexer há 10 min, 60–120 s). Aparelhos a cada 5 min.
+- Fila = fila real do Spotify (igual no celular). "Adicionar à fila" vai direto para o Spotify. O app não troca mais a música sozinho.
+- Diagnóstico em Configurações: consultas por minuto/hora/dia e por tipo, com "Copiar relatório".
+- Roda de cores livre para o neon. Mini player novo: Mesa de DJ (também na janelinha de vídeo).
+- Echo Show / celular deitado: o player e a tela de espera cabem na altura real (sem cortar os controles).
+- Pop-up em vídeo aberto: a página mostra só o aviso, sem o holograma por trás.
+- Aviso de uso no celular (app ntfy): Configurações → "Aviso de uso no celular". Avisa em 70% (uso alto), 90% (muito alto, liga o modo econômico) e quando a cota estoura. Teto padrão 2.000/dia por aparelho; depois que a cota estourar uma vez, usa 90% daquele número.
+- Modo palco: Jukebox (leva difícil), também na janelinha de vídeo.
+- Mini player não estica mais ao ser arrastado.
+- Modo palco #12 Bolha de sabão: página, pop-up do computador e janelinha de vídeo; botão de tocar/pausar dentro da bolha; reflexo acompanha o ponteiro.
+- Rodada 10: cubo de vidro fosco brilhante, sempre inclinado (mostra 3 faces) e balançando de leve; faces em ordem fixa 1-6 (Letra, Capa, Próximas, Sua história, Sobre o artista, O que a letra quer dizer) com marcador; não volta sozinho para a letra; letra grande com relevo em camadas e entrada vindo de dentro da tela.
+
+## Rodada 11 — novos mini players (modo palco)
+- Holograma Hora do Show, Dado de controles, Órbita de controles (#88), Baralho de capas, Letras dançantes.
+- Fundo transparente na página; todos os botões de dentro funcionam (tocar, anterior, próxima, favoritar, aleatório, próximas, abrir o player).
+- Janelinha do sistema (iPhone/Android): desenho próprio para os 5; Dado e Órbita ficam quadrados, Baralho fica em pé.
+- Botões ⟲10 / ⟳10 da janelinha: anterior / próxima, com a animação do estilo (carta voando, dado rolando, holograma piscando).
+- Arquivos: r11.css, r11.js (+ ajustes em r6.js, pip.js, spotify.js).
+- Configurações → "Modo palco · fundo transparente": Ligado (padrão, só o objeto flutua) / Desligado (painel de vidro atrás). Na janelinha do sistema, Ligado = fundo preto puro.

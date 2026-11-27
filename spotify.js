@@ -128,12 +128,17 @@ html.light #cfgb{color:#0c2533}
     if (!a) throw new Error("Sem login");
     const url = "https://api.spotify.com/v1" + path + (q ? "?" + new URLSearchParams(q) : "");
     if (Date.now() < SPOT.pauseUntil) throw Object.assign(new Error("O Spotify pediu uma pausa; tente daqui a pouco"), { status: 429 });
+    const rec = { t: Date.now(), m: method, p: path.replace(/\/[A-Za-z0-9]{12,}/g, "/:id"), s: 0 };
+    SPOT.log.push(rec); if (SPOT.log.length > 3000) SPOT.log.splice(0, 1000);
+    if (method !== "GET" && /^\/me\/player/.test(path)) SPOT.kick && SPOT.kick();
     const r = await fetch(url, { method, headers: Object.assign({ Authorization: "Bearer " + a }, body ? { "Content-Type": "application/json" } : {}), body: body ? JSON.stringify(body) : undefined });
+    rec.s = r.status; try { SPOT.day(rec); } catch (e) {}
     if (r.status === 429) {
       // sem tentar de novo em cadeia: todo o app espera
       let quota = false; try { quota = /QUOTA/.test(await r.clone().text()); } catch (e) {}
       const w = +(r.headers.get("Retry-After") || 0);
       SPOT.pauseUntil = Date.now() + Math.max(w || 0, quota ? 120 : 8) * 1000;
+      if (quota) { try { const d = LS.get("pd_req") || {}; LS.set("pd_ceil", { d: d.d, n: d.n || 0, t: Date.now() }); } catch (e) {} }
       if (quota && !SPOT.quotaSaid) { SPOT.quotaSaid = 1; say("O Spotify limitou o uso por enquanto. O Paredão vai esperar e tentar de novo sozinho."); }
       throw Object.assign(new Error("O Spotify pediu uma pausa"), { status: 429 });
     }
@@ -144,6 +149,19 @@ html.light #cfgb{color:#0c2533}
     return j;
   }
   SPOT.api = api; SPOT.pauseUntil = 0;
+  // contagem do dia (fica salva no aparelho, para o diagnóstico)
+  SPOT.log = [];
+  SPOT.day = rec => {
+    const d = new Date().toISOString().slice(0, 10); let o = LS.get("pd_req") || {};
+    if (o.d !== d) o = { d, n: 0, e: 0, by: {} };
+    o.n++; if (rec.s === 429) o.e++; const k = rec.m + " " + rec.p; o.by[k] = (o.by[k] || 0) + 1;
+    LS.set("pd_req", o);
+  };
+  // qualquer comando da pessoa pede uma conferência rápida logo depois
+  SPOT.kick = () => { SPOT.kickAt = Date.now() + 1200; };
+  let lastAct = Date.now();
+  ["pointerdown", "keydown"].forEach(ev => addEventListener(ev, () => { lastAct = Date.now(); }, { passive: true, capture: true }));
+  SPOT.idle = () => Date.now() - lastAct > 10 * 60e3;
 
   /* ---------- catálogo ---------- */
   const DEF = "#1fd3f2";
@@ -299,6 +317,7 @@ html.light #cfgb{color:#0c2533}
     if (sdkActive()) { (on ? SPOT.player.resume() : SPOT.player.pause()).catch(() => {}); return; }
     api("PUT", on ? "/me/player/play" : "/me/player/pause", null, tgt()).catch(fail);
   };
+  SPOT.shuffle = on => { api("PUT", "/me/player/shuffle", null, Object.assign({ state: !!on }, tgt() || {})).catch(fail); };
   SPOT.seek = t => {
     const ms = Math.max(0, Math.round(t * 1000));
     if (sdkActive()) { SPOT.player.seek(ms).catch(() => {}); return; }
@@ -316,7 +335,32 @@ html.light #cfgb{color:#0c2533}
     }, 150);
   };
   SPOT.queue = k => { window.PQ ? PQ.add(k) : S.ql.push(k); };
-  SPOT.qDirty = () => { SPOT.dirty = true; };
+  SPOT.qDirty = () => {};
+  // fila real do Spotify: aparece igual no celular, na TV e aqui
+  let qT = 0, qBusy = false;
+  SPOT.fetchQueue = (delay) => {
+    clearTimeout(qT);
+    qT = setTimeout(async () => {
+      if (!SPOT.on || qBusy || Date.now() < SPOT.pauseUntil) return; qBusy = true;
+      try {
+        const r = await api("GET", "/me/player/queue");
+        if (r && Array.isArray(r.queue)) {
+          const cur = r.currently_playing ? addItem(r.currently_playing) : S.i;
+          const seen = new Set([cur]);
+          S.ql = r.queue.map(t => addItem(t)).filter(k => k >= 0 && !seen.has(k) && seen.add(k)).slice(0, 20);
+          SPOT.realQ = true; document.body.classList.add("spq");
+          window.PQ && PQ.changed && PQ.changed();
+        }
+      } catch (e) {} finally { qBusy = false; }
+    }, delay || 0);
+  };
+  SPOT.addReal = k => {
+    const m = SP[k]; if (!m || !m.uri) return false;
+    if (!S.ql.includes(k)) S.ql.push(k);
+    window.PQ && PQ.changed && PQ.changed();
+    api("POST", "/me/player/queue", null, Object.assign({ uri: m.uri }, tgt() || {})).then(() => SPOT.fetchQueue(800)).catch(fail);
+    return true;
+  };
   SPOT.playContext = uri => { api("PUT", "/me/player/play", { context_uri: uri }, tgt()).then(firstVolume).catch(fail); };
   SPOT.like = (k, on) => { const m = SP[k]; if (!m) return; api(on ? "PUT" : "DELETE", "/me/library", null, { uris: m.uri }).catch(fail); };
   SPOT.transfer = j => {
@@ -336,7 +380,8 @@ html.light #cfgb{color:#0c2533}
     _playK(k);
     if (!SPOT.on) return;
     S.ql = S.ql.filter(x => x !== k);
-    const rest = S.ql.concat(window.PQ ? PQ.auto(20) : []).filter(x => x !== k).slice(0, 30);
+    // o que está na fila do Spotify continua lá; aqui vão só as sugestões depois dela
+    const rest = (window.PQ ? PQ.auto(20) : []).filter(x => x !== k && !S.ql.includes(x)).slice(0, 25);
     SPOT.dirty = false;
     SPOT.play(k, rest);
   };
@@ -346,10 +391,11 @@ html.light #cfgb{color:#0c2533}
     if (i !== S.i) {
       const prevI = S.i; S.i = i; lyrics(i);
       // a fila do Paredão manda: se o Spotify foi para outra música, corrige
+      // a fila de verdade é a do Spotify (a mesma do celular): nada de trocar a música sozinho
       if (S.ql.length && S.ql[0] === i) S.ql.shift();
-      else if (SPOT.dirty && S.ql.length && prevI != null) { SPOT.dirty = false; const k = S.ql.shift(); setTimeout(() => playK(k), 50); }
       SPOT.dirty = false;
       window.PQ && PQ.changed && PQ.changed();
+      SPOT.fetchQueue(900);
     }
     if (flipping !== 1) S.t = Math.min(pos, dur || pos);
     if (dur) D = dur;
@@ -395,8 +441,13 @@ html.light #cfgb{color:#0c2533}
           status(statusTxt()); return;
         }
       }
-      // aparelho remoto: consulta a cada 5 s tocando, 15 s pausado
-      if (Date.now() - lastApiPoll < (S.p ? 5000 : 15000) || Date.now() < SPOT.pauseUntil) return;
+      // aparelho remoto: o progresso anda sozinho na tela; o Spotify só é consultado
+      // quando a música deve acabar, logo depois de um comando, ou de tempos em tempos
+      const now = Date.now(), gap = now - lastApiPoll, left = (D - S.t) * 1000;
+      const every = (S.p ? (SPOT.idle() ? 60000 : 25000) : (SPOT.idle() ? 120000 : 45000)) * (SPOT.eco ? 2 : 1);
+      const due = gap >= every || (SPOT.kickAt && now >= SPOT.kickAt) || (S.p && D > 0 && left < 400 && gap > 3000);
+      if (!due || now < SPOT.pauseUntil) return;
+      SPOT.kickAt = 0;
       lastApiPoll = Date.now();
       const r = await api("GET", "/me/player");
       if (r && r.item) {
@@ -595,7 +646,7 @@ html.light #cfgb{color:#0c2533}
       status(statusTxt());
       loadSDK(); refreshDevices(); poll();
       setInterval(poll, 1000);
-      setInterval(() => { if (!document.hidden) refreshDevices(); }, 90000);
+      setInterval(() => { if (!document.hidden && !SPOT.idle()) refreshDevices(); }, 300000);
       if (document.body.dataset.s === "wait") openWait("");
     } catch (e) {
       status("Não consegui falar com o Spotify: " + e.message + ". Confira o Client ID e se a sua conta está em User Management.");

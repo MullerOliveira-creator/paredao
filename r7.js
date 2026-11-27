@@ -131,3 +131,23 @@
   new MutationObserver(cols).observe(dm, { childList: true, attributes: true, attributeFilter: ["class"] });
   addEventListener("resize", cols); cols();
 })();
+
+/* ---------- rodada 8: dado D1 no shuffle e Salvar com disquete (S2) ---------- */
+(function () {
+  // D2 · dois dados rolando (mesmo degradê da casinha)
+  const dots = (pts, r) => pts.map(([x, y]) => `<circle class="p" cx="${x}" cy="${y}" r="${r}"/>`).join("");
+  const D1 = '<svg class="d2" viewBox="0 0 100 100" aria-hidden="true">' +
+    '<g transform="rotate(-14 36 58)"><rect x="12" y="34" width="46" height="46" rx="11" fill="url(#r5g)"/>' + dots([[24, 46], [46, 46], [35, 57], [24, 68], [46, 68]], 4.6) + '</g>' +
+    '<g transform="rotate(16 70 36)"><rect class="b" x="50" y="14" width="40" height="40" rx="10" fill="url(#r5g)"/>' + dots([[60, 24], [70, 34], [80, 44]], 4.2) + '</g></svg>';
+  const sh = document.getElementById("shuf"); if (sh) sh.innerHTML = D1;
+  const S2 = '<svg viewBox="0 0 100 100" aria-hidden="true"><path fill="url(#r5g)" fill-rule="evenodd" d="M16 10h56l14 14v62a4 4 0 0 1-4 4H18a4 4 0 0 1-4-4V14a4 4 0 0 1 4-4zM30 12v24h38V12zM56 16h7v16h-7zM24 54v32h52V54z"/><path d="M36 70l9 9 19-19" fill="none" stroke="url(#r5g)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  function save() {
+    const b = document.getElementById("cfgok"); if (!b || b.classList.contains("svd")) return;
+    b.classList.add("svd"); b.innerHTML = S2; b.title = "Salvar"; b.setAttribute("aria-label", "Salvar");
+    b.addEventListener("click", () => { b.classList.add("ok"); setTimeout(() => b.classList.remove("ok"), 900); });
+  }
+  save(); setTimeout(save, 1200);
+  // se algum código antigo devolver o texto ao botão, volta o disquete
+  const b = document.getElementById("cfgok");
+  if (b) new MutationObserver(() => { if (!b.querySelector("svg")) { b.classList.remove("svd"); save(); } }).observe(b, { childList: true, characterData: true, subtree: true });
+})();

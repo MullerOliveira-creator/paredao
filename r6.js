@@ -245,9 +245,9 @@
   const stg = $("#stg"); if (!stg) return;
   const ST = [
     ["capsula", "Cápsula de vidro"], ["paredao", "Paredão"], ["vinil", "Toca-discos"], ["cassete", "Fita cassete"],
-    ["vfd", "Display de som automotivo"], ["ingresso", "Ingresso de show"], ["ilha", "Ilha dinâmica"], ["aero", "Painel de aeroporto"], ["holo", "Holograma"]
+    ["vfd", "Display de som automotivo"], ["ingresso", "Ingresso de show"], ["ilha", "Ilha dinâmica"], ["aero", "Painel de aeroporto"], ["holo", "Holograma"], ["dj", "Mesa de DJ"], ["jukebox", "Jukebox"], ["bolha", "Bolha de sabão"]
   ];
-  let cur = "capsula"; try { const v = localStorage.getItem("pd_stage"); if (ST.some(x => x[0] === v)) cur = v; } catch (e) {}
+  let cur = "capsula", v0 = null; try { const v = v0 = localStorage.getItem("pd_stage"); if (ST.some(x => x[0] === v)) cur = v; } catch (e) {}
   const x = document.createElement("div"); x.className = "sgx"; stg.appendChild(x);
   const T_ = '<b data-f="t"></b>', A_ = '<small data-f="a"></small>', C_ = '<i data-f="c"></i>';
   const tpl = {
@@ -259,6 +259,9 @@
     ingresso: `<div class="tk"><div class="tkm"><small class="tkh">PAREDÃO · HORA DO SHOW</small>${T_}${A_}<div class="tkb"></div></div><div class="tks"><span>ADMIT</span><b>ONE</b></div></div>`,
     ilha: `<div class="isl">${C_}<div class="ptx">${T_}${A_}</div><span class="iw">${"<i></i>".repeat(5)}</span></div>`,
     aero: `<div class="flap"><div class="fh"><span>DESTINO</span><span>STATUS</span></div><div class="fr"><span data-f="tf" class="fl"></span><span class="st">TOCANDO</span></div><div class="fr sm"><span data-f="af" class="fl"></span></div></div>`,
+    bolha: `<div class="bub"><div class="bcv">${C_}</div><div class="bfilm"></div><div class="brim"></div><i class="bhl"></i><div class="btx">${T_}${A_}</div><button type="button" class="bpp" aria-label="Tocar ou pausar"><svg viewBox="0 0 24 24"><g class="pau"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></g><path class="ply" d="M8 5v14l11-7z"/></svg></button></div>`,
+    jukebox: `<div class="jbx"><div class="jtop"><i class="jt l"></i><div class="jwin"><div class="jrec">${C_}</div><span class="jarm"></span></div><i class="jt r"></i></div><div class="jlab">${T_}${A_}</div><div class="jbot"><div class="jsel">${"<i></i>".repeat(10)}</div><div class="jgr"></div></div></div>`,
+    dj: `<div class="djm"><div class="djd"><div class="djp"><div class="djv">${C_}</div><span class="dja"></span></div><div class="djk"><i></i><i></i><i></i></div></div><div class="djc"><div class="djs">${T_}${A_}</div><div class="djvu">${"<i></i>".repeat(10)}</div><div class="djx"><span></span></div><div class="djpad">${"<i></i>".repeat(8)}</div></div><div class="djd r"><div class="djp"><div class="djv"><i class="djl"></i></div><span class="dja"></span></div><div class="djk"><i></i><i></i><i></i></div></div></div>`,
     holo: `<div class="hol"><div class="beam"></div>${C_}<div class="ptx">${T_}${A_}</div><div class="base"></div></div>`
   };
   const flap = (s, n) => [...(String(s).toUpperCase().normalize("NFD").replace(/[̀-ͯ]/g, "") + " ".repeat(n)).slice(0, n)].map(c => `<i>${c === " " ? "&nbsp;" : esc(c)}</i>`).join("");
@@ -282,6 +285,11 @@
     drawPick();
   }
   setInterval(() => { if (stg.classList.contains("on") || stg.classList.contains("inpip")) fill(); }, 400);
+  ["pointerdown", "pointerup"].forEach(ev => stg.addEventListener(ev, e => { if (e.target.closest(".bpp")) e.stopPropagation(); }, true));
+  stg.addEventListener("click", e => { const b = e.target.closest(".bpp"); if (!b) return; e.stopPropagation(); const x = document.createElement("button"); x.dataset.a = "pp"; x.hidden = true; document.body.appendChild(x); x.click(); x.remove(); });
+  // a bolha olha para o ponteiro (reflexo e filme acompanham)
+  stg.addEventListener("pointermove", e => { if (stg.dataset.st !== "bolha") return; const r = stg.getBoundingClientRect(); stg.style.setProperty("--bx", ((e.clientX - r.left) / r.width - .5).toFixed(3)); stg.style.setProperty("--by", ((e.clientY - r.top) / r.height - .5).toFixed(3)); });
+  stg.addEventListener("pointerleave", () => { stg.style.setProperty("--bx", 0); stg.style.setProperty("--by", 0); });
   /* escolha nas configurações */
   const pal = document.getElementById("cfgpal"); let box = null;
   function drawPick() {
@@ -293,7 +301,7 @@
     box.addEventListener("click", e => { const b = e.target.closest("[data-stg]"); if (!b) return; e.stopPropagation(); setStage(b.dataset.stg); stg.classList.add("prev"); clearTimeout(box._t); box._t = setTimeout(() => stg.classList.remove("prev"), 2500); });
   }
   setStage(cur);
-  window.STAGE = { set: setStage, list: ST };
+  window.STAGE = { set: setStage, list: ST, tpl, v0, cur: () => cur };
 })();
 
 /* ---------- Cor da barra de progresso = cor principal da capa (demonstração e Spotify) ---------- */

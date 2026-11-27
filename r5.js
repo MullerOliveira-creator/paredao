@@ -68,14 +68,14 @@
   const mix = (a, b, t) => { const p = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16)), x = p(a), y = p(b); return "#" + x.map((v, i) => Math.round(v + (y[i] - v) * t).toString(16).padStart(2, "0")).join(""); };
   const lum = h => { const x = parseInt(h.slice(1), 16); return (.299 * (x >> 16) + .587 * (x >> 8 & 255) + .114 * (x & 255)) / 255; };
   let TH = { m: "e", bg: 0, ne: 0 };
-  try { const t = JSON.parse(localStorage.getItem("pd_theme") || "null"); if (t && BGS[t.m] && BGS[t.m][t.bg] && NEONS[t.ne]) TH = t; } catch (e) {}
+  try { const t = JSON.parse(localStorage.getItem("pd_theme") || "null"); if (t && BGS[t.m] && BGS[t.m][t.bg] && (NEONS[t.ne] || /^#[0-9a-f]{6}$/i.test(t.ne))) TH = t; } catch (e) {}
   window.THEME = { BGS, NEONS, get: () => TH, set: (t) => applyTheme(Object.assign({}, TH, t)) };
   function themeObj(t) {
-    const bg = BGS[t.m][t.bg][1], neon = NEONS[t.ne][1], light = t.m === "c";
+    const bg = BGS[t.m][t.bg][1], free = typeof t.ne === "string", neon = free ? t.ne : NEONS[t.ne][1], light = t.m === "c";
     // no fundo claro o neon escurece um pouco para ler bem; o brilho continua no tom puro
     const a = light ? mix(neon, "#000000", lum(neon) > .7 ? .45 : .22) : neon;
     const ink = light ? mix(bg, "#0b1218", .88) : mix(neon, "#ffffff", .9);
-    return { n: BGS[t.m][t.bg][0] + " + " + NEONS[t.ne][0], bg, a, b: mix(a, bg, .55), c: ink, neon, light };
+    return { n: BGS[t.m][t.bg][0] + " + " + (free ? "neon livre" : NEONS[t.ne][0]), bg, a, b: mix(a, bg, .55), c: ink, neon, light };
   }
   const _setP = setP;
   function applyTheme(t) {
@@ -122,7 +122,7 @@
         const t = TH, nm = themeObj(t).n;
         pal.innerHTML = `<div class="tseg"><button type="button" data-tm="c" class="${t.m === "c" ? "on" : ""}">Claro</button><button type="button" data-tm="e" class="${t.m === "e" ? "on" : ""}">Escuro</button></div>` +
           `<div class="tlab">Fundo · <b>${esc(BGS[t.m][t.bg][0])}</b></div><div class="tgrid">` + BGS[t.m].map((b, j) => `<button type="button" class="tbg${j === t.bg ? " on" : ""}" data-tb="${j}" title="${esc(b[0])}" aria-label="Fundo ${esc(b[0])}"><i style="background:${b[1]}"></i></button>`).join("") + "</div>" +
-          `<div class="tlab">Cor neon · <b>${esc(NEONS[t.ne][0])}</b></div><div class="tgrid">` + NEONS.map((n, j) => `<button type="button" class="tne${j === t.ne ? " on" : ""}" data-tn="${j}" title="${esc(n[0])}" aria-label="Neon ${esc(n[0])}"><i style="background:${n[1]};--g:${n[1]}"></i></button>`).join("") + "</div>";
+          `<div class="tlab">Cor neon · <b>${esc(NEONS[t.ne] ? NEONS[t.ne][0] : "livre (roda de cores)")}</b></div><div class="tgrid">` + NEONS.map((n, j) => `<button type="button" class="tne${j === t.ne ? " on" : ""}" data-tn="${j}" title="${esc(n[0])}" aria-label="Neon ${esc(n[0])}"><i style="background:${n[1]};--g:${n[1]}"></i></button>`).join("") + "</div>";
         const h = pal.previousElementSibling; if (h && h.tagName === "H4") h.textContent = "Cores e fundo";
       };
       pal.addEventListener("click", e => {
@@ -175,7 +175,12 @@
     if (S.ql.length) { S.i = S.ql.shift(); } else { const a = autoList(1); S.i = a.length ? a[0] : stepI(S.i, 1); }
     S.t = 0; say("Tocando: " + T[S.i][0]);
   };
-  function addQ(k) { if (k == null) return; S.ql.push(k); qChanged(); say("Na fila: " + T[k][0]); }
+  function addQ(k) {
+    if (k == null) return;
+    // conectado: vai direto para a fila do Spotify (aparece igual no celular)
+    if (sp() && SPOT.addReal && SPOT.addReal(k)) { say("Na fila do Spotify: " + T[k][0]); return; }
+    S.ql.push(k); qChanged(); say("Na fila: " + T[k][0]);
+  }
   function qChanged() { const em = $("#em"); if (em) em.textContent = S.ql.length; renderQ(); if (sp() && SPOT.qDirty) SPOT.qDirty(); }
   PQ.add = addQ; PQ.changed = qChanged;
   // botão da fila no player só consulta (vira a face Próximas)
@@ -240,6 +245,10 @@
   });
   const card = (k, opts) => `<div class="ti" data-t="${k}"${opts && opts.q != null ? ` data-qi="${opts.q}"` : ""}><i class="c" style="background-image:url(${art(k).u})"></i><div class="t"><b>${esc(T[k][0])}</b><span>${esc(T[k][1])}</span></div>${opts && opts.q != null ? `<span class="ac"><button type="button" data-qm="-1" title="Subir">↑</button><button type="button" data-qm="1" title="Descer">↓</button><button type="button" data-qx title="Tirar da fila">×</button></span>` : ""}</div>`;
   function upNextHTML() {
+    if (sp() && SPOT.realQ) {
+      const r = S.ql.map(k => card(k)).join("");
+      return `<div class="em" style="padding:8px 6px 4px">Fila do Spotify · a mesma do celular</div>` + (r || '<div class="em">A fila do Spotify está vazia.</div>');
+    }
     const q = S.ql.map((k, j) => card(k, { q: j })).join("");
     const a = autoList(10).map(k => card(k)).join("");
     return (q ? q : "") + (a ? `<div class="em" style="padding:8px 6px 4px">${q ? "Depois, no automático" : "Fila vazia · tocando no automático"}</div>` + a : "");
