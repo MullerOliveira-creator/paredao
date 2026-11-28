@@ -1,0 +1,27 @@
+/* cores: duas bolas de vidro e uma barra de brilho */
+#cfgpal.cfg15{display:block!important}
+#cfgpal .c15{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:6px 0 12px}
+#cfgpal .cball{position:relative;display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 8px 10px;border-radius:16px;cursor:pointer;text-align:center;
+ background:linear-gradient(160deg,rgba(255,255,255,.14),rgba(255,255,255,.03));box-shadow:inset 0 1px 1px rgba(255,255,255,.3),0 6px 14px rgba(0,0,0,.25)}
+#cfgpal .cball input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;border:0;padding:0}
+#cfgpal .cball i{width:56px;height:56px;border-radius:50%;box-shadow:inset 0 -8px 14px rgba(0,0,0,.35),inset 0 8px 12px rgba(255,255,255,.45),0 0 0 3px rgba(255,255,255,.7),0 6px 14px rgba(0,0,0,.4);pointer-events:none}
+#cfgpal .cball b{font:700 14px "Chakra Petch",sans-serif;color:var(--ink,#fff)}
+#cfgpal .cball small{font:400 11px "Chakra Petch",sans-serif;opacity:.7;color:var(--ink,#fff)}
+#cfgpal .c15b{display:flex;align-items:center;gap:10px;margin:4px 0 12px}
+#cfgpal .c15b small{font:400 11px "Chakra Petch",sans-serif;opacity:.7;white-space:nowrap}
+#cfgpal .c15b input{flex:1;accent-color:var(--neon,var(--a))}
+#cfgpal .c15p{display:flex;gap:10px;flex-wrap:wrap;margin:6px 0 4px}
+#cfgpal .c15p button{all:unset;cursor:pointer;width:42px;height:42px;border-radius:50%;background:var(--b);box-shadow:inset 0 0 0 2px rgba(255,255,255,.4),0 4px 10px rgba(0,0,0,.35);display:grid;place-items:center}
+#cfgpal .c15p button i{width:18px;height:18px;border-radius:50%;background:var(--n);box-shadow:0 0 10px var(--n)}
+#cwh{display:none!important}
+/* todas as barras com a mesma cara da barra de volume: trilho de vidro escuro, parte cheia na cor do tema, bolinha de vidro */
+input[type=range]:not(#vi){-webkit-appearance:none;appearance:none;height:10px!important;min-height:0!important;margin:0!important;padding:0!important;border:0!important;outline:0!important;border-radius:6px!important;accent-color:auto;opacity:1!important;
+ background:linear-gradient(90deg,var(--a) var(--v,50%),transparent var(--v,50%)),linear-gradient(180deg,color-mix(in srgb,var(--a) 22%,#04131b),#04131b)!important;
+ box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--a) 45%,rgba(210,248,255,.75)),inset 0 2px 4px rgba(0,0,0,.6),0 0 10px color-mix(in srgb,var(--a) 35%,transparent)!important}
+input[type=range]:not(#vi)::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;cursor:pointer;border:0;
+ background:radial-gradient(circle at 50% 30%,rgba(255,255,255,.6),transparent 45%),radial-gradient(circle at 50% 46%,color-mix(in srgb,var(--a) 45%,#0a2b38),#0a2b38 60%,#04141c);
+ box-shadow:inset 0 0 0 1.5px #e6fbff,0 0 10px color-mix(in srgb,var(--a) 70%,transparent),0 3px 6px rgba(0,0,0,.6)}
+input[type=range]:not(#vi)::-moz-range-thumb{width:20px;height:20px;border:0;border-radius:50%;cursor:pointer;background:radial-gradient(circle at 50% 46%,color-mix(in srgb,var(--a) 45%,#0a2b38),#04141c);box-shadow:inset 0 0 0 1.5px #e6fbff,0 0 10px color-mix(in srgb,var(--a) 70%,transparent)}
+input[type=range]:not(#vi)::-moz-range-track{background:none}
+html.light input[type=range]:not(#vi){background:linear-gradient(90deg,var(--a) var(--v,50%),transparent var(--v,50%)),linear-gradient(180deg,#fff,#e6eef2)!important}
+#cfg #cfgpal .c15b{gap:8px}#cfg #cfgpal .c15b small{flex:none;font-size:11px}#cfg #cfgpal .c15b input{flex:1;min-width:0;width:auto!important}

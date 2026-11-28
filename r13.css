@@ -18,3 +18,15 @@ html.desk:hover #dtb,html.deskfull #dtb{opacity:1}
 #dtb [data-d=x]:hover{background:#d33}
 /* player completo dentro do programa: a barrinha serve para arrastar a janela */
 html.deskfull #dtb{top:4px}
+/* arrastar: programa antigo usa o arrasto do sistema */
+#dtb .dh{-webkit-app-region:no-drag;app-region:no-drag}
+#dtb .dh.sysdrag{-webkit-app-region:drag;app-region:drag}
+/* letra passando embaixo do mini player (só no programa de Windows) */
+#dly{display:none}
+html.desk #dly{display:block;position:absolute;left:50%;top:calc(100% + 10px);width:max-content;max-width:min(30em,calc(100vw - 20px));translate:-50% 0;text-align:center;pointer-events:none}
+#dly .l1{font:800 1.35em/1.15 "Exo 2",sans-serif;letter-spacing:-.01em;color:rgba(255,255,255,.4);text-wrap:balance;
+ text-shadow:0 2px 6px rgba(0,0,0,.85),0 0 2px rgba(0,0,0,.9)}
+#dly .l1 span.d,#dly .l1 span.a{color:#fff;text-shadow:0 1px 0 color-mix(in srgb,var(--neon,var(--a)) 60%,#000),0 2px 0 color-mix(in srgb,var(--neon,var(--a)) 40%,#000),0 3px 8px rgba(0,0,0,.8),0 0 .5em color-mix(in srgb,var(--neon,var(--a)) 70%,transparent)}
+#dly .l1 span.a{color:color-mix(in srgb,var(--neon,var(--a)) 70%,#fff)}
+#dly .l1.in{animation:dlyIn .35s cubic-bezier(.2,.9,.3,1.2)}
+@keyframes dlyIn{from{opacity:0;transform:translateY(.5em) scale(.96)}}

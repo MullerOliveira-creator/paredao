@@ -396,6 +396,7 @@ html.light #cfgb{color:#0c2533}
       SPOT.dirty = false;
       window.PQ && PQ.changed && PQ.changed();
       SPOT.fetchQueue(900);
+      SPOT.kickAt = Date.now() + 3500; // uma conferência logo no começo da música, para a letra entrar no tempo
     }
     if (flipping !== 1) S.t = Math.min(pos, dur || pos);
     if (dur) D = dur;
@@ -444,18 +445,23 @@ html.light #cfgb{color:#0c2533}
       // aparelho remoto: o progresso anda sozinho na tela; o Spotify só é consultado
       // quando a música deve acabar, logo depois de um comando, ou de tempos em tempos
       const now = Date.now(), gap = now - lastApiPoll, left = (D - S.t) * 1000;
-      const every = (S.p ? (SPOT.idle() ? 60000 : 25000) : (SPOT.idle() ? 120000 : 45000)) * (SPOT.eco ? 2 : 1);
+      let every = (S.p ? (SPOT.idle() ? 60000 : 25000) : (SPOT.idle() ? 120000 : 45000)) * (SPOT.eco ? 2 : 1);
+      // letra na tela: confere o tempo com o Spotify com mais frequência (fica no tempo certo)
+      if (S.p && !SPOT.eco && window.PD_LYRICS_ON && PD_LYRICS_ON()) every = Math.min(every, 12000);
       const due = gap >= every || (SPOT.kickAt && now >= SPOT.kickAt) || (S.p && D > 0 && left < 400 && gap > 3000);
       if (!due || now < SPOT.pauseUntil) return;
       SPOT.kickAt = 0;
       lastApiPoll = Date.now();
+      const t0 = Date.now();
       const r = await api("GET", "/me/player");
+      const lat = (Date.now() - t0) / 2000; // metade da ida e volta = atraso da resposta
       if (r && r.item) {
         const i = addItem(r.item);
         if (r.device && r.device.id !== SPOT.target) SPOT.target = r.device.id;
         SPOT.curName = r.device ? (r.device.id === SPOT.dev ? "Este navegador" : r.device.name) : null;
         if (fresh && r.device && r.device.volume_percent != null && !S.m && r.device.supports_volume !== false) S.v = r.device.volume_percent / 100;
-        setState(i, (r.progress_ms || 0) / 1000, (r.item.duration_ms || 0) / 1000, r.is_playing);
+        setState(i, (r.progress_ms || 0) / 1000 + (r.is_playing ? lat : 0), (r.item.duration_ms || 0) / 1000, r.is_playing);
+        SPOT.lastSync = Date.now();
       } else SPOT.curName = null;
       status(statusTxt());
     } catch (e) {} finally { polling = false; }

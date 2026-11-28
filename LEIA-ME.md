@@ -157,3 +157,11 @@ Para atualizar no GitHub: suba `index.html`, `spotify.js`, `r5.css`, `r5.js`, `r
 ## Rodada 13 — Paredão para Windows
 - r13.css / r13.js: quando a página abre dentro do programa de Windows, só o mini player aparece, sem fundo, com a barrinha (arrastar, −, +, configurações, fechar).
 - O programa (Paredao-Player-portatil.exe) abre o site oficial; no navegador comum nada muda.
+- 13b: arrastar a janela pela barrinha ou pelo próprio mini player; letra passando embaixo (botão de linhas na barrinha liga/desliga).
+
+## Rodada 14 — motor de tempo
+- r14.js: relógio único (tempo calculado a partir do último ponto conferido com o Spotify), correção do atraso da rede, conferência extra 3,5 s depois de cada troca de música e a cada 12 s enquanto a letra está na tela; programa de Windows não deixa mais o mini player sumir.
+
+## Rodada 15 — cores simples
+- r15.js/css: Configurações → Cores com duas bolas (Fundo e Neon, abrem o seletor de cor do aparelho), barra de brilho do neon e combinações prontas. r5.js aceita fundo livre (bgx) e brilho (nb); o claro/escuro sai da cor do fundo.
+- 15b: todas as barras (brilho, vidro do cubo, volume dos aparelhos etc.) com a mesma cara da barra de volume.

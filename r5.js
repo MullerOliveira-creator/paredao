@@ -71,11 +71,13 @@
   try { const t = JSON.parse(localStorage.getItem("pd_theme") || "null"); if (t && BGS[t.m] && BGS[t.m][t.bg] && (NEONS[t.ne] || /^#[0-9a-f]{6}$/i.test(t.ne))) TH = t; } catch (e) {}
   window.THEME = { BGS, NEONS, get: () => TH, set: (t) => applyTheme(Object.assign({}, TH, t)) };
   function themeObj(t) {
-    const bg = BGS[t.m][t.bg][1], free = typeof t.ne === "string", neon = free ? t.ne : NEONS[t.ne][1], light = t.m === "c";
+    const bx = typeof t.bgx === "string", bg = bx ? t.bgx : BGS[t.m][t.bg][1], free = typeof t.ne === "string", light = bx ? lum(t.bgx) > .55 : t.m === "c";
+    let neon = free ? t.ne : NEONS[t.ne][1];
+    if (t.nb) neon = t.nb > 0 ? mix(neon, "#ffffff", Math.min(.8, t.nb)) : mix(neon, "#000000", Math.min(.8, -t.nb)); // barra de brilho
     // no fundo claro o neon escurece um pouco para ler bem; o brilho continua no tom puro
     const a = light ? mix(neon, "#000000", lum(neon) > .7 ? .45 : .22) : neon;
     const ink = light ? mix(bg, "#0b1218", .88) : mix(neon, "#ffffff", .9);
-    return { n: BGS[t.m][t.bg][0] + " + " + (free ? "neon livre" : NEONS[t.ne][0]), bg, a, b: mix(a, bg, .55), c: ink, neon, light };
+    return { n: (bx ? "fundo livre" : BGS[t.m][t.bg][0]) + " + " + (free ? "neon livre" : NEONS[t.ne][0]), bg, a, b: mix(a, bg, .55), c: ink, neon, light };
   }
   const _setP = setP;
   function applyTheme(t) {
