@@ -197,16 +197,21 @@ build(b){b.innerHTML=`<div class="gm"><div class="sc"></div><div class="lg">PARE
  return{onTrack:mk,tick(dt){g.fillStyle=P[3];g.fillRect(0,0,80,60);for(let k=0;k<784;k++){g.fillStyle=P[3-pix[k]];g.fillRect(4+(k%28),4+(k/28|0),1,1)}
   for(let k=0;k<10;k++){const h=Math.round(S.spec[k*3]*20);g.fillStyle=P[0];g.fillRect(38+k*4,32-h,3,h)}
   off=(off+dt*14)%200;g.fillStyle=P[0];g.font='8px Silkscreen, monospace';g.save();g.beginPath();g.rect(0,40,80,20);g.clip();const s=tr().title.toUpperCase()+'   ';g.fillText(s,80-off,52);g.restore();g.fillRect(4,57,72*S.t/dur(),2)}}}});
-def({id:'ecg',name:'Monitor cardíaco',fam:'ond',bg:'void',
-pitch:'A música como sinal vital: cada batida desenha um pico de eletrocardiograma e o BPM aparece grande, como num monitor de UTI.',
-wow:'"O coração da música, literalmente."',tech:['Canvas 2D','forma PQRST','BPM em destaque'],
-css:`.ek{width:290px;border-radius:12px;padding:10px;background:#050807;box-shadow:inset 0 0 0 2px #1b2a22;color:#4dff88;font-family:JetBrains Mono,monospace}.ek .tp{display:flex;justify-content:space-between;align-items:flex-end}.ek .n{font:700 34px/1 JetBrains Mono,monospace}.ek .ht{color:#ff4d6d;display:inline-block}
-.ek .t{display:flex;gap:10px;align-items:center;font-size:12px;color:#b8ffd0;margin-top:6px}.ek .t>div{flex:1}.ek .b{background:#0f2a18;color:#4dff88}`,
-build(b){b.innerHTML=`<div class="ek"><div class="tp"><div><span class="ht">♥</span> BPM</div><div class="n"></div></div></div>`;const box=b.firstChild,K=cvs(box,270,80);el(box,`<div class="t"><div>${TT}</div>${ppb()}</div>`);const n=b.querySelector('.n'),ht=b.querySelector('.ht');const Y=new Float32Array(270);let x=0;
+def({id:'ecg',name:'Pulso da música',fam:'ond',bg:'void',
+pitch:'O coração da música batendo no ritmo: a linha de pulso na cor do tema corre num vidro, e o coração pula a cada batida.',
+wow:'"Dá pra sentir a música respirando."',tech:['Canvas 2D','forma PQRST','cor do tema'],
+css:`.ek{width:290px;border-radius:24px;padding:12px 14px 12px;background:linear-gradient(160deg,#ffffff24,#ffffff08);backdrop-filter:blur(16px) saturate(1.6);-webkit-backdrop-filter:blur(16px) saturate(1.6);box-shadow:inset 0 1px 0 #ffffff45,inset 0 0 0 .5px #ffffff20,0 18px 36px #0007;color:#fff;font-family:Inter,system-ui,sans-serif}
+.ek .tp{display:flex;justify-content:space-between;align-items:center}.ek .lb{display:flex;align-items:center;gap:8px;font:600 11px/1 Inter,sans-serif;letter-spacing:.14em;text-transform:uppercase;opacity:.75}
+.ek .ht{width:22px;height:22px;display:block;color:var(--neon,#ff4d8b);filter:drop-shadow(0 0 6px var(--neon,#ff4d8b));transition:transform .08s}
+.ek .n{font:800 30px/1 Inter,sans-serif;color:var(--neon,#fff);text-shadow:0 0 14px color-mix(in srgb,var(--neon,#fff) 70%,transparent)}.ek .n small{font:600 11px Inter,sans-serif;opacity:.7;margin-left:3px;color:#fff;text-shadow:none}
+.ek canvas{margin:4px -4px 0}.ek .t{display:flex;gap:10px;align-items:center;font-size:13px;margin-top:4px}.ek .t>div{flex:1}.ek .b{background:#ffffff1f;color:#fff}`,
+build(b){b.innerHTML=`<div class="ek"><div class="tp"><div class="lb"><svg class="ht" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 21s-7.5-4.6-9.3-9.6C1.4 7.8 3.6 4.5 7 4.5c2 0 3.4 1.1 5 3 1.6-1.9 3-3 5-3 3.4 0 5.6 3.3 4.3 6.9C19.5 16.4 12 21 12 21z"/></svg>pulso da música</div><div class="n"></div></div></div>`;const box=b.firstChild,K=cvs(box,270,70);el(box,`<div class="t"><div>${TT}</div>${ppb()}</div>`);const n=b.querySelector('.n'),ht=b.querySelector('.ht');const Y=new Float32Array(270);let x=0,col='#1fd3f2',ck=0;
  const pq=t=>t<.04?Math.sin(t/.04*Math.PI)*.12:t<.08?0:t<.1?-.15:t<.13?1:t<.16?-.3:t<.26?0:t<.36?Math.sin((t-.26)/.1*Math.PI)*.2:0;
- return{tick(dt){const t=S.time-S.lastBeat;for(let k=0;k<2;k++){x=(x+1)%270;Y[x]=S.playing?pq(t)+(Math.random()-.5)*.03:0}const{g}=K;g.fillStyle='#050807';g.fillRect(0,0,270,80);
-  g.strokeStyle='#123322';for(let k=0;k<270;k+=18){g.beginPath();g.moveTo(k,0);g.lineTo(k,80);g.stroke()}g.strokeStyle='#4dff88';g.lineWidth=1.6;g.shadowColor='#4dff88';g.shadowBlur=8;g.beginPath();
-  for(let k=0;k<270;k++){const i2=(x+1+k)%270;const y=56-Y[i2]*48;k?g.lineTo(k,y):g.moveTo(k,y)}g.stroke();g.shadowBlur=0;n.textContent=tr().real?'—':tr().bpm;ht.style.transform=`scale(${1+S.beat*.5})`}}}});
+ return{tick(dt){if(!ck--){ck=30;col=getComputedStyle(document.documentElement).getPropertyValue('--neon').trim()||'#1fd3f2'}const t=S.time-S.lastBeat;for(let k=0;k<2;k++){x=(x+1)%270;Y[x]=S.playing?pq(t)+(Math.random()-.5)*.02:0}const{g}=K;g.clearRect(0,0,270,70);
+  g.lineCap=g.lineJoin='round';g.lineWidth=2.2;g.shadowColor=col;g.shadowBlur=10;
+  for(let k=1;k<270;k++){const i1=(x+k)%270,i2=(x+1+k)%270;g.globalAlpha=Math.pow(k/270,1.6);g.strokeStyle=col;g.beginPath();g.moveTo(k-1,48-Y[i1]*40);g.lineTo(k,48-Y[i2]*40);g.stroke()}
+  g.globalAlpha=1;g.fillStyle='#fff';g.beginPath();g.arc(269,48-Y[x]*40,3,0,TAU);g.fill();g.shadowBlur=0;
+  n.innerHTML=(tr().real?'—':tr().bpm)+'<small>bpm</small>';ht.style.transform=`scale(${1+S.beat*.45})`}}}});
 def({id:'post',name:'Post-it',fam:'org',bg:'paper',
 pitch:'Um bilhete adesivo colado na tela com o nome da música escrito à mão. A ponta descola quando você passa o mouse.',
 wow:'"Simples e charmoso. Parece bilhete de alguém."',tech:['fonte manuscrita','canto que descola','SVG rabisco'],
@@ -226,7 +231,7 @@ build(b){b.innerHTML=`<div class="im"><span class="hn">arraste até uma borda</s
  return{onGrab(){if(side){side=0;o.classList.remove('dk')}},onDrop(i){const B=i.bounds();i.measure();if(i.x<40){side=-1}else if(i.x+i.w>B.w-40){side=1}if(side){o.classList.add('dk');i.vx=i.vy=0}},
  tick(dt,i){if(side&&!i.dragging){const B=i.bounds();i.measure();const tx=side<0?6:B.w-i.w-6;i.x=lerp(i.x,tx,.25);i.y=clamp(i.y,6,Math.max(6,B.h-i.hh-6));i.place()}}}}});
   })(L);
-  const NAME = { aquario: "Aquário de bolso", poeira: "Poeira estelar", ferro: "Ferrofluido", liquidglass: "Vidro líquido", acelerador: "Acelerador de partículas", buraconegro: "Buraco negro", solar: "Sistema solar da fila", valvulado: "Rádio valvulado", polaroid: "Polaroid revelando", radar: "Radar", ascii: "Capa em ASCII", terminal: "Terminal", gameboy: "Console 8 bits", ecg: "Monitor cardíaco", post: "Post-it", ima: "Aba magnética" };
+  const NAME = { aquario: "Aquário de bolso", poeira: "Poeira estelar", ferro: "Ferrofluido", liquidglass: "Vidro líquido", acelerador: "Acelerador de partículas", buraconegro: "Buraco negro", solar: "Sistema solar da fila", valvulado: "Rádio valvulado", polaroid: "Polaroid revelando", radar: "Radar", ascii: "Capa em ASCII", terminal: "Terminal", gameboy: "Console 8 bits", ecg: "Pulso da música", post: "Post-it", ima: "Aba magnética" };
   const BY = {}; C.forEach(c => BY["lb_" + c.id] = c);
 
   /* CSS de cada estilo, preso dentro do mini player para não vazar no resto do site */
@@ -422,11 +427,14 @@ html.light .lbx .fe{color:#121212}html.light .lbx .fe .ctl.dark .b{background:#0
   const D2 = VP.DRAW;
   ["poeira", "ferro", "acelerador", "buraconegro", "radar"].forEach(id => D2["lb_" + id] = viaCanvas(id));
   D2.lb_ecg = function (c) {
-    bgV(c); x.fillStyle = "#050807"; rr(20, 20, 600, 320, 22); x.fill(); x.strokeStyle = "#1b2a22"; x.lineWidth = 3; x.stroke();
-    x.fillStyle = "#ff4d6d"; x.font = '700 40px "JetBrains Mono",monospace'; x.fillText("♥", 50, 82); x.fillStyle = "#4dff88"; x.font = '600 22px "JetBrains Mono",monospace'; x.fillText("BPM", 92, 78);
-    x.font = '700 64px "JetBrains Mono",monospace'; x.textAlign = "right"; x.fillText(String(tr().bpm), 590, 92); x.textAlign = "left";
-    const k = canv()[0]; if (k) x.drawImage(k, 40, 106, 560, 150);
-    const t = T[S.i] || ["", ""]; x.fillStyle = "#b8ffd0"; x.font = '600 24px "JetBrains Mono",monospace'; x.fillText(fit(t[0], 540), 50, 296); x.globalAlpha = .7; x.font = '400 18px "JetBrains Mono",monospace'; x.fillText(fit(t[1] || "", 540), 50, 322); x.globalAlpha = 1;
+    bgV(c); x.save(); x.shadowColor = "rgba(0,0,0,.5)"; x.shadowBlur = 30; x.fillStyle = "rgba(255,255,255,.1)"; rr(24, 24, 592, 312, 30); x.fill(); x.restore();
+    x.strokeStyle = "rgba(255,255,255,.25)"; x.lineWidth = 1.2; rr(24, 24, 592, 312, 30); x.stroke();
+    const hs = 1 + L.beat * .45; x.save(); x.translate(64, 70); x.scale(hs * 1.4, hs * 1.4); x.fillStyle = c.ne; x.shadowColor = c.ne; x.shadowBlur = 12; x.fill(new Path2D("M0 9s-7.5-4.6-9.3-9.6C-10.6-4.2-8.4-7.5-5-7.5c2 0 3.4 1.1 5 3 1.6-1.9 3-3 5-3 3.4 0 5.6 3.3 4.3 6.9C7.5 4.4 0 9 0 9z")); x.restore();
+    x.fillStyle = "rgba(255,255,255,.75)"; x.font = '600 18px Inter,sans-serif'; x.fillText("PULSO DA MÚSICA", 92, 77);
+    x.save(); x.fillStyle = c.ne; x.shadowColor = c.ne; x.shadowBlur = 16; x.font = '800 58px Inter,sans-serif'; x.textAlign = "right"; x.fillText(String(tr().bpm), 560, 92); x.restore();
+    x.fillStyle = "rgba(255,255,255,.7)"; x.font = '600 18px Inter,sans-serif'; x.fillText("bpm", 566, 92);
+    const k = canv()[0]; if (k) x.drawImage(k, 40, 112, 560, 145);
+    const t = T[S.i] || ["", ""]; x.fillStyle = "#fff"; x.font = '700 26px Inter,sans-serif'; x.fillText(fit(t[0], 540), 50, 292); x.globalAlpha = .7; x.font = '400 19px Inter,sans-serif'; x.fillText(fit(t[1] || "", 540), 50, 318); x.globalAlpha = 1;
   };
   D2.lb_aquario = function (c) {
     bgV(c); const k = canv()[0];
