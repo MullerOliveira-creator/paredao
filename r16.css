@@ -1,0 +1,127 @@
+/* Paredão Player — rodada 16: pop-ups em "vidro elevado"
+   Pedido: sem contorno, um preset de elevação, vidro como o da barra de busca e cada cartão projetado para fora da tela (3D).
+   Vale para: menu Dispositivos, menu de Favoritos, menu da música (segurar a capa), avisos, Configurações e janelinha. */
+:root{
+ --vz-ne:var(--neon,var(--a,#1fd3f2));
+ --vz-bg:color-mix(in srgb,var(--bg,#071a26) 52%,transparent);
+ --vz-ink:#f2fbff;--vz-sub:rgba(242,251,255,.66);
+ --vz-hi:rgba(255,255,255,.18);
+ --vz-card:linear-gradient(165deg,rgba(255,255,255,.13),rgba(255,255,255,.035) 55%,rgba(255,255,255,.02));
+ --vz-cardh:linear-gradient(165deg,rgba(255,255,255,.2),rgba(255,255,255,.06) 55%,rgba(255,255,255,.03));
+ /* elevação: 5 camadas de sombra (contato, perto, meio, longe, ambiente) */
+ --vz-e1:0 1px 1px rgba(0,0,0,.22),0 2px 4px rgba(0,0,0,.18),0 6px 12px rgba(0,0,0,.18),0 14px 26px -6px rgba(0,0,0,.3);
+ --vz-e2:0 1px 1px rgba(0,0,0,.2),0 4px 8px rgba(0,0,0,.18),0 12px 24px rgba(0,0,0,.22),0 28px 48px -10px rgba(0,0,0,.4),0 46px 80px -24px rgba(0,0,0,.45);
+ --vz-pr:0 34px 60px -26px color-mix(in srgb,var(--vz-ne) 60%,transparent);
+}
+html.light{
+ --vz-bg:color-mix(in srgb,#ffffff 64%,transparent);
+ --vz-ink:#0c2533;--vz-sub:rgba(12,37,51,.62);
+ --vz-hi:rgba(255,255,255,.95);
+ --vz-card:linear-gradient(165deg,rgba(255,255,255,.92),rgba(255,255,255,.62));
+ --vz-cardh:linear-gradient(165deg,#fff,rgba(255,255,255,.8));
+ --vz-e1:0 1px 1px rgba(20,40,60,.08),0 2px 5px rgba(20,40,60,.08),0 8px 16px rgba(20,40,60,.09),0 18px 30px -8px rgba(20,40,60,.16);
+ --vz-e2:0 1px 2px rgba(20,40,60,.08),0 6px 12px rgba(20,40,60,.08),0 16px 30px rgba(20,40,60,.12),0 34px 60px -14px rgba(20,40,60,.22);
+ --vz-pr:0 30px 50px -26px color-mix(in srgb,var(--vz-ne) 45%,transparent);
+}
+
+/* ---------- a placa de vidro (a caixa que abre) ---------- */
+html body #dm#dm,html body #fm#fm,html body #ctx#ctx,html body #cfg#cfg .cfgp{
+ background:linear-gradient(160deg,rgba(255,255,255,.1),rgba(255,255,255,.02) 42%),var(--vz-bg)!important;
+ -webkit-backdrop-filter:blur(28px) saturate(1.8)!important;backdrop-filter:blur(28px) saturate(1.8)!important;
+ border:0!important;outline:0!important;
+ box-shadow:inset 0 1px 0 var(--vz-hi),inset 0 0 0 .5px rgba(255,255,255,.07),var(--vz-e2),var(--vz-pr)!important;
+ color:var(--vz-ink)!important;border-radius:24px!important;
+}
+html.light body #dm,html.light body #fm,html.light body #ctx,html.light body #cfg#cfg .cfgp{background:linear-gradient(160deg,rgba(255,255,255,.75),rgba(255,255,255,.4)),var(--vz-bg)!important}
+html body #dm.on,html body #fm.on,html body #ctx.on{animation:vzIn .34s cubic-bezier(.2,1.25,.4,1) both;transform-origin:20% 100%}
+html body #ctx.on{transform-origin:0 0}
+@keyframes vzIn{from{opacity:0;transform:perspective(900px) translateY(14px) rotateX(10deg) scale(.94);filter:blur(4px)}to{opacity:1;transform:none;filter:none}}
+
+/* ---------- cartões projetados (cada item é uma peça de vidro solta, que sai da tela) ---------- */
+html body #dm#dm>div,html body #ctx#ctx button,html body #cfg#cfg .c15 .cball,html body #cfg#cfg .stgrid button,html body #cfg#cfg .pipseg button,html body #cfg#cfg .c16p button,html body #cfg#cfg #cfgpalh,html body #cfg#cfg .stgx button{
+ position:relative;border:0!important;outline:0!important;
+ background:var(--vz-card)!important;color:var(--vz-ink)!important;
+ box-shadow:inset 0 1px 0 var(--vz-hi),var(--vz-e1)!important;
+ transform:perspective(700px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg)) translateZ(var(--tz,0px))!important;
+ transform-style:preserve-3d;
+ transition:transform .35s cubic-bezier(.2,1.2,.4,1),box-shadow .3s,background .3s!important;
+}
+/* brilho que segue o dedo/mouse */
+html body #dm#dm>div::after,html body #ctx#ctx button::after,html body #cfg#cfg .c15 .cball::after,html body #cfg#cfg .stgrid button::after,html body #cfg#cfg .pipseg button::after,html body #cfg#cfg .c16p button::after{
+ content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:0;transition:opacity .3s;
+ background:radial-gradient(140px 90px at var(--mx,50%) var(--my,0%),rgba(255,255,255,.28),transparent 70%)
+}
+html body #dm#dm>div:hover,html body #ctx#ctx button:hover,html body #cfg#cfg .c15 .cball:hover,html body #cfg#cfg .stgrid button:hover,html body #cfg#cfg .pipseg button:hover,html body #cfg#cfg .c16p button:hover{
+ --tz:16px;background:var(--vz-cardh)!important;
+ box-shadow:inset 0 1px 0 var(--vz-hi),var(--vz-e2)!important
+}
+html body #dm#dm>div:hover::after,html body #ctx#ctx button:hover::after,html body #cfg#cfg .c15 .cball:hover::after,html body #cfg#cfg .stgrid button:hover::after,html body #cfg#cfg .pipseg button:hover::after,html body #cfg#cfg .c16p button:hover::after{opacity:1}
+html body #dm#dm>div:active,html body #ctx#ctx button:active,html body #cfg#cfg .stgrid button:active,html body #cfg#cfg .pipseg button:active,html body #cfg#cfg .c16p button:active{--tz:4px;transition-duration:.12s!important}
+/* escolhido: sem contorno; a luz do neon projeta por baixo e o vidro fica tingido */
+html body #dm#dm>div.on,html body #cfg#cfg .stgrid button.on,html body #cfg#cfg .pipseg button.on,html body #cfg#cfg .c16p button.on{
+ --tz:10px;
+ background:linear-gradient(165deg,color-mix(in srgb,var(--vz-ne) 30%,rgba(255,255,255,.12)),color-mix(in srgb,var(--vz-ne) 10%,rgba(255,255,255,.03)))!important;
+ box-shadow:inset 0 1px 0 var(--vz-hi),var(--vz-e2),0 22px 34px -14px color-mix(in srgb,var(--vz-ne) 85%,transparent)!important
+}
+html.light body #dm#dm>div.on,html.light body #cfg#cfg .stgrid button.on,html.light body #cfg#cfg .pipseg button.on,html.light body #cfg#cfg .c16p button.on{background:linear-gradient(165deg,color-mix(in srgb,var(--vz-ne) 16%,#fff),color-mix(in srgb,var(--vz-ne) 6%,#fff))!important}
+html body #dm#dm>div.on:before{display:none!important}
+/* textos dos cartões */
+html body #dm#dm>div small,html body #dm#dm>div .ds,html body #cfg#cfg .cball small{color:var(--vz-sub)!important}
+html body #dm#dm>div .dp{color:var(--vz-ne);font-weight:700}
+html.light body #dm#dm>div .dp{color:var(--a)}
+
+/* ---------- menu Dispositivos: título e barra de volume dentro do vidro ---------- */
+html body #dm{padding:14px!important}
+html body #dm .dh,html body #dm>b,html body #dm>small:first-child{color:var(--vz-sub)!important}
+
+/* ---------- Favoritos: pílula "+ Adicionar aos favoritos" ---------- */
+html body #fm{padding:6px!important;min-width:0!important;border-radius:99px!important}
+html body #fm>div{border-radius:99px!important;padding:10px 18px 10px 14px!important;font-weight:700;display:flex;align-items:center;gap:8px;white-space:nowrap}
+html body #fm>div:before{content:"+";display:grid;place-items:center;width:20px;height:20px;border-radius:50%;font-weight:800;line-height:1;background:color-mix(in srgb,var(--vz-ne) 28%,transparent);color:var(--vz-ink)}
+html body #fm>div.on:before,html body #fm.fv>div:before{content:"✓";background:var(--vz-ne);color:#001018}
+
+/* ---------- avisos (toast): pílula de vidro com o selo na cor do tema ---------- */
+html body #tt#tt,html body #ftoast#ftoast{
+ display:flex;align-items:center;gap:10px;padding:9px 18px 9px 9px!important;border-radius:99px!important;
+ background:linear-gradient(160deg,rgba(255,255,255,.12),rgba(255,255,255,.02)),var(--vz-bg)!important;
+ -webkit-backdrop-filter:blur(24px) saturate(1.8);backdrop-filter:blur(24px) saturate(1.8);
+ color:var(--vz-ink)!important;font-weight:700;box-shadow:inset 0 1px 0 var(--vz-hi),var(--vz-e2),var(--vz-pr)!important;white-space:nowrap;max-width:min(92vw,560px)
+}
+html body #tt>span,html body #ftoast>span{overflow:hidden;text-overflow:ellipsis}
+html body #tt .tk,html body #ftoast .tk{flex:none;display:grid;place-items:center;width:26px;height:26px;border-radius:50%;font-size:14px;font-weight:900;background:var(--vz-ne);color:#001018;box-shadow:0 0 14px color-mix(in srgb,var(--vz-ne) 70%,transparent)}
+html body #tt.on,html body #ftoast.on{animation:vzT .45s cubic-bezier(.2,1.4,.4,1) both}
+@keyframes vzT{from{opacity:0;scale:.86}to{opacity:1;scale:1}}
+
+/* ---------- menu da música (segurar a capa) ---------- */
+html body #ctx{padding:10px!important;display:none}
+html body #ctx.on{display:flex!important;flex-direction:column;gap:8px}
+html body #ctx#ctx button{border-radius:14px!important;padding:12px 14px!important}
+html body #ctx#ctx button .ic{color:var(--vz-ne)}
+
+/* ---------- Configurações ---------- */
+html body #cfg#cfg .cfgp>h4,html body #cfg#cfg .tlab{color:var(--vz-sub)!important}
+html body #cfg#cfg .tlab b{color:var(--vz-ink)}
+html body #cfg#cfg .c15 .cball{border-radius:20px!important}
+html body #cfg#cfg .stgrid button{border-radius:16px!important}
+html body #cfg#cfg .pipseg button{border-radius:16px!important}
+html body #cfg#cfg #cfgpalh{border-radius:18px!important;transform:none}
+/* filtro de Fundo (Escuro / Claro) e as paletas de cada um */
+#cfg .c16f,#cfg .stgf{display:flex;gap:6px;padding:5px;border-radius:99px;margin:2px 0 12px;background:rgba(0,0,0,.22);box-shadow:inset 0 1px 3px rgba(0,0,0,.35),inset 0 -1px 0 rgba(255,255,255,.06);width:max-content;max-width:100%;overflow-x:auto;scrollbar-width:none}
+html.light #cfg .c16f,html.light #cfg .stgf{background:rgba(12,37,51,.07);box-shadow:inset 0 1px 3px rgba(12,37,51,.14)}
+#cfg .c16f button,#cfg .stgf button{all:unset;cursor:pointer;padding:7px 16px;border-radius:99px;font:600 13px 'Exo 2',sans-serif;color:var(--vz-sub);white-space:nowrap;transition:background .25s,color .25s,box-shadow .25s}
+#cfg .c16f button.on,#cfg .stgf button.on{color:var(--vz-ink);background:var(--vz-cardh);box-shadow:inset 0 1px 0 var(--vz-hi),var(--vz-e1)}
+#cfg .c16f button small,#cfg .stgf button small{opacity:.6;margin-left:6px;font-weight:400}
+#cfg .c16p{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:6px}
+#cfg .c16p button{all:unset;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:7px;padding:12px 4px 10px;border-radius:18px;font:600 12px 'Exo 2',sans-serif;text-align:center;line-height:1.15}
+#cfg .c16p button i{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--b) 0 50%,var(--n) 50%);box-shadow:inset 0 0 0 2px rgba(255,255,255,.55),0 4px 10px rgba(0,0,0,.35),0 0 14px color-mix(in srgb,var(--n) 45%,transparent)}
+#cfg .c15p{display:none!important}
+/* Modo palco: filtro por coleção */
+#cfg .stgx{display:none}
+#cfg #cfgstg .stgrid button[hidden]{display:none!important}
+
+/* ---------- janelinha (Chrome/Edge): botões numa pílula de vidro elevada ---------- */
+body[data-s=pip] #pipc{padding:8px 12px!important;margin-bottom:12px;border-radius:99px;background:linear-gradient(160deg,rgba(255,255,255,.12),rgba(255,255,255,.02)),color-mix(in srgb,var(--bg,#071a26) 55%,transparent);-webkit-backdrop-filter:blur(22px) saturate(1.7);backdrop-filter:blur(22px) saturate(1.7);box-shadow:inset 0 1px 0 rgba(255,255,255,.18),var(--vz-e2)}
+body[data-s=pip] #pipc button{box-shadow:inset 0 1px 0 rgba(255,255,255,.25),var(--vz-e1)!important;transition:transform .25s cubic-bezier(.2,1.3,.4,1)}
+body[data-s=pip] #pipc button:hover{transform:translateY(-3px) scale(1.06)}
+
+@media (prefers-reduced-motion:reduce){html body .dm.on,html body #ctx.on,html body #tt.on,html body #ftoast.on{animation:none}html body #dm#dm>div,html body #ctx#ctx button,html body #cfg#cfg .stgrid button{transition:none!important}}

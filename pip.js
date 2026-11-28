@@ -626,6 +626,8 @@ html.light #pipc button{color:var(--a);background:radial-gradient(circle at 35% 
     x.save(); x.shadowColor = c.ne; x.shadowBlur = 10; x.fillStyle = c.ne; x.fillRect(0, H - 5, W * pr01(), 5); x.restore();
   };
   DRAW.toca = DRAW.vinil;
+  // rodada 16: outros arquivos podem acrescentar estilos ao vídeo flutuante
+  Object.assign(VP, { DRAW, DIMS, x, rr, fit, coverK, pal, TBG, pr01, mmss, SC });
   function draw() {
     const dm = DIMS[stg()] || [640, 360];
     if (dm[0] !== W || dm[1] !== H) { W = dm[0]; H = dm[1]; cv.width = W * SC; cv.height = H * SC; }
