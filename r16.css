@@ -125,3 +125,15 @@ body[data-s=pip] #pipc button{box-shadow:inset 0 1px 0 rgba(255,255,255,.25),var
 body[data-s=pip] #pipc button:hover{transform:translateY(-3px) scale(1.06)}
 
 @media (prefers-reduced-motion:reduce){html body .dm.on,html body #ctx.on,html body #tt.on,html body #ftoast.on{animation:none}html body #dm#dm>div,html body #ctx#ctx button,html body #cfg#cfg .stgrid button{transition:none!important}}
+
+/* ---------- Modo palco: fundo Fosco ---------- */
+html body #stg#stg.fosco{
+ padding:16px 18px!important;border-radius:30px!important;border:0!important;overflow:visible;
+ background:linear-gradient(160deg,rgba(255,255,255,.16),rgba(255,255,255,.06))!important;
+ -webkit-backdrop-filter:blur(32px) saturate(1.8) brightness(1.05)!important;backdrop-filter:blur(32px) saturate(1.8) brightness(1.05)!important;
+ box-shadow:inset 0 1px 0 rgba(255,255,255,.35),inset 0 0 0 .5px rgba(255,255,255,.12),var(--vz-e2)!important
+}
+html.light body #stg#stg.fosco{background:linear-gradient(160deg,rgba(255,255,255,.62),rgba(255,255,255,.38))!important;box-shadow:inset 0 1px 0 #fff,inset 0 0 0 .5px rgba(255,255,255,.6),var(--vz-e2)!important}
+html body #stg#stg.fosco .sgx{-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+/* três opções de fundo lado a lado */
+html body #cfg#cfg #cfgtr .pipseg.tr3{grid-template-columns:repeat(3,minmax(0,1fr))}

@@ -412,7 +412,7 @@ html.light #pipc button{color:var(--a);background:radial-gradient(circle at 35% 
     x.fillStyle = "rgba(255,255,255,.85)"; rr(cx - 90, cy + R - 30, Math.max(4, 180 * pr), 4, 2); x.fill();
   };
   /* ===== rodada 11: janelinha do sistema para os novos estilos ===== */
-  const TBG = c => { let on = true; try { on = localStorage.getItem("pd_stgtr") !== "0"; } catch (e) {} return on ? "#020406" : c.bg; };
+  const TBG = c => { if (window.PD_TBG) { const v = PD_TBG(c); if (v) return v; } let on = true; try { on = localStorage.getItem("pd_stgtr") !== "0"; } catch (e) {} return on ? "#020406" : c.bg; };
   const IMC = {};
   function coverK(k) {
     let u = ""; try { u = art(k).u || ""; } catch (e) {} if (!u) return null;

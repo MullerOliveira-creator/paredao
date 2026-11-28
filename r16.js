@@ -595,3 +595,45 @@ html.light .lbx .fe{color:#121212}html.light .lbx .fe .ctl.dark .b{background:#0
   STAGE.set(STAGE.cur()); stg.style.left = l; stg.style.top = t; stg.style.right = r; stg.style.bottom = b;
   apply();
 })();
+
+/* ---------- Modo palco: fundo Fosco (vidro jateado, dá para perceber o que tem atrás mas não ler) ---------- */
+(function () {
+  const stg = document.getElementById("stg"); if (!stg) return;
+  const LS = (k, v) => { try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (e) {} };
+  const val = () => { const v = LS("pd_stgtr"); return v === "0" || v === "f" ? v : "1"; };
+  const OPT = [["1", "Transparente", "só o mini player flutua por cima da tela"], ["f", "Fosco", "vidro jateado: vê o que tem atrás, sem ler"], ["0", "Painel", "mini player dentro de um painel de vidro"]];
+  function apply() { stg.classList.toggle("fosco", val() === "f"); if (val() === "f") stg.classList.remove("opq"); }
+  function seg() {
+    const box = document.getElementById("cfgtr"); if (!box) return;
+    const ps = box.querySelector(".pipseg"); if (!ps) return;
+    const v = val(), h = OPT.map(([k, t, s]) => `<button type="button" data-tr16="${k}" class="${k === v ? "on" : ""}">${t}<small>${s}</small></button>`).join("");
+    if (ps._h !== h) { ps._h = h; ps.innerHTML = h; ps.classList.add("tr3"); }
+  }
+  document.addEventListener("click", e => {
+    const b = e.target.closest && e.target.closest("#cfgtr [data-tr16],#cfgtr [data-tr]"); if (!b) return;
+    e.stopImmediatePropagation(); e.preventDefault();
+    LS("pd_stgtr", b.dataset.tr16 || b.dataset.tr); seg(); apply();
+    stg.classList.toggle("opq", val() === "0");
+    const w = window.PIP && PIP.win; if (w && w.document && w.document.body) w.document.body.style.background = val() === "0" ? "" : "#000";
+    stg.classList.add("prev"); clearTimeout(stg._p16); stg._p16 = setTimeout(() => stg.classList.remove("prev"), 2500);
+  }, true);
+  new MutationObserver(seg).observe(document.getElementById("cfg") || document.body, { childList: true, subtree: true });
+  seg(); apply(); setInterval(() => { apply(); seg(); }, 1000);
+
+  /* vídeo flutuante: não dá para ver o que está atrás da janelinha, então o fosco usa a capa da música desfocada */
+  const pc = document.createElement("canvas"), px = pc.getContext("2d"); let pk = "", pat = null;
+  window.PD_TBG = function (c) {
+    if (val() !== "f" || !window.VPIP) return null;
+    const dm = (VPIP.DIMS && VPIP.DIMS[LS("pd_stage") || ""]) || [640, 360], im = VPIP.coverK && VPIP.coverK(S.i);
+    const key = dm + "|" + (im ? im.src : "") + "|" + c.lt + c.bg;
+    if (key !== pk) {
+      pk = key; pc.width = dm[0]; pc.height = dm[1];
+      px.fillStyle = c.bg; px.fillRect(0, 0, dm[0], dm[1]);
+      if (im) { const s = Math.max(dm[0], dm[1]) * 1.25; px.filter = "blur(34px) saturate(1.5)"; px.drawImage(im, (dm[0] - s) / 2, (dm[1] - s) / 2, s, s); px.filter = "none"; }
+      px.fillStyle = c.lt ? "rgba(255,255,255,.55)" : "rgba(10,14,20,.35)"; px.fillRect(0, 0, dm[0], dm[1]);
+      px.fillStyle = "rgba(255,255,255,.10)"; px.fillRect(0, 0, dm[0], dm[1]);
+      pat = px.createPattern(pc, "no-repeat");
+    }
+    return pat;
+  };
+})();
