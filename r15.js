@@ -14,7 +14,7 @@
     // já montado: só atualiza as cores no lugar. Recriar as bolas fecha o seletor de cor do iPhone no meio da escolha.
     if (pal.querySelector(".c15")) {
       pal.querySelectorAll(".cball input").forEach(i => { const v = i.dataset.k === "bg" ? c.bg : c.ne; i.nextElementSibling.style.background = v; if (document.activeElement !== i && i.value.toLowerCase() !== v.toLowerCase()) try { i.value = v; } catch (e) {} });
-      const r = pal.querySelector("#nbr"); if (r && document.activeElement !== r) r.value = nb;
+      const r = pal.querySelector("#nbr"); if (r && document.activeElement !== r && !r.dataset.drag) r.value = nb;
       return;
     }
     pal.className = "cfg15";
@@ -22,10 +22,15 @@
       `<div class="c15">` +
       `<label class="cball"><input type="color" data-k="bg" value="${esc(c.bg)}" aria-label="Cor do fundo"><i style="background:${esc(c.bg)}"></i><b>Fundo</b><small>a cor de trás</small></label>` +
       `<label class="cball"><input type="color" data-k="ne" value="${esc(THEME.NEONS[t.ne] ? THEME.NEONS[t.ne][1] : t.ne)}" aria-label="Cor do neon"><i style="background:${esc(c.ne)}"></i><b>Neon</b><small>brilhos, bordas e destaques</small></label>` +
-      `</div><div class="tlab">Brilho do neon</div><div class="c15b"><small>mais escuro</small><input type="range" id="nbr" min="-40" max="40" step="5" value="${nb}" aria-label="Brilho do neon"><small>mais claro</small></div>` +
+      `</div><div class="tlab">Brilho do neon</div><div class="c15b"><small>mais escuro</small><input type="range" id="nbr" min="-40" max="40" step="1" value="${nb}" aria-label="Brilho do neon"><small>mais claro</small></div>` +
       `<div class="tlab">Combinações prontas</div><div class="c15p">` + PRE.map(([b, n], j) => `<button type="button" data-pr="${j}" title="Fundo ${b} · Neon ${n}" style="--b:${b};--n:${n}"><i></i></button>`).join("") + `</div>`;
     const h = pal.previousElementSibling; if (h && h.tagName === "H4") h.textContent = "Cores";
   };
+  // enquanto o dedo arrasta a barra de brilho, ninguém mexe no valor dela (no iPhone a barra não fica "focada")
+  pal.addEventListener("pointerdown", e => { if (e.target.id === "nbr") e.target.dataset.drag = 1; }, true);
+  pal.addEventListener("touchstart", e => { if (e.target.id === "nbr") e.target.dataset.drag = 1; }, { capture: true, passive: true });
+  const undrag = () => { const r = pal.querySelector("#nbr"); if (r) setTimeout(() => delete r.dataset.drag, 400); };
+  ["pointerup", "pointercancel", "touchend", "touchcancel", "change"].forEach(t => document.addEventListener(t, undrag, true));
   pal.addEventListener("input", e => {
     const el = e.target; e.stopPropagation();
     if (el.dataset.k === "bg") { el.nextElementSibling.style.background = el.value; set({ bgx: el.value }); }
@@ -151,4 +156,30 @@
   document.addEventListener("keydown", e => { if (!/^(INPUT|TEXTAREA|SELECT)$/.test((e.target.tagName || ""))) document.body.classList.add("nohover"); }, true);
   let mx = -1, my = -1;
   document.addEventListener("mousemove", e => { if (Math.abs(e.clientX - mx) + Math.abs(e.clientY - my) > 3) { mx = e.clientX; my = e.clientY; document.body.classList.remove("nohover"); } }, true);
+})();
+
+/* tela de espera: "Hora do Show" menor, cubo no meio da altura da tela e Podcasts na mesma linha de Playlists e Fila */
+(function () {
+  const rst = document.getElementById("rst"), pod = document.getElementById("rpod");
+  const place = () => {
+    const on = document.body.dataset.s === "wait" && innerWidth >= 701;
+    document.body.classList.toggle("wlay", on);
+    const ws = document.getElementById("ws"), hs = document.querySelector("#wait .hs");
+    if (rst) rst.style.translate = ""; if (pod) pod.style.translate = ""; if (ws) ws.style.translate = "";
+    if (!on) return;
+    // o logo encolheu: o subtítulo sobe junto, sem deixar buraco
+    if (ws && hs) { const k = ws.getBoundingClientRect().height / (ws.offsetHeight || 1) || 1; ws.style.translate = "0 " + (-(hs.getBoundingClientRect().height / .72) * .28 / k).toFixed(1) + "px"; }
+    const ref = document.getElementById("qbtn") || document.getElementById("plbtn");
+    if (pod && ref && ref.offsetHeight) { const a = pod.getBoundingClientRect(), b = ref.getBoundingClientRect(), k = a.height / (pod.offsetHeight || a.height); pod.style.translate = "0 " + (((b.top + b.height / 2) - (a.top + a.height / 2)) / k).toFixed(1) + "px"; }
+    if (rst) {
+      const r = rst.getBoundingClientRect(); if (!r.height) return;
+      let dy = innerHeight / 2 - (r.top + r.height / 2);
+      // não sobe por cima do título "Músicas para você"
+      const sub = document.getElementById("ws");
+      if (sub && sub.offsetHeight) dy = Math.max(dy, sub.getBoundingClientRect().bottom + 10 - r.top);
+      const kr = r.height / (rst.offsetHeight || r.height) || 1, kt = (rst.style.transform, 1);
+      rst.style.translate = "0 " + dy.toFixed(1) + "px";
+    }
+  };
+  addEventListener("resize", place); setInterval(place, 700); place();
 })();

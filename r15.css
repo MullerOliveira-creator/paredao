@@ -49,3 +49,27 @@ body.trlow #stage .tr{z-index:30}
 button:focus:not(:focus-visible),input:focus:not(:focus-visible),[tabindex]:focus:not(:focus-visible){outline:none!important}
 input[type=range]:focus,input[type=range]:focus-visible{outline:none!important}
 body.nohover #stage button,body.nohover .gbtn,body.nohover #wait button{pointer-events:none}
+/* espera: logo Hora do Show menor */
+body.wlay #wait .hs{scale:.72;transform-origin:50% 0}
+
+/* respiração do cavalo (jato do nariz) na cor do neon, desde o primeiro instante */
+#home .mkw .jet,#home .mkw i.jet{background:linear-gradient(180deg,color-mix(in srgb,var(--neon,var(--a)) 35%,#fff),color-mix(in srgb,var(--neon,var(--a)) 55%,transparent) 42%,transparent)!important;filter:blur(6px) drop-shadow(0 0 10px var(--neon,var(--a))) drop-shadow(0 0 20px color-mix(in srgb,var(--neon,var(--a)) 60%,transparent))!important}
+
+/* ícones redondos lisos, iguais aos botões de baixo (o dado continua com o degradê, é o diferencial) */
+svg:not(.d2):has([fill="url(#r5g)"],[stroke="url(#r5g)"]){color:var(--neon,var(--a))}
+html.light svg:not(.d2):has([fill="url(#r5g)"],[stroke="url(#r5g)"]){color:var(--a)}
+svg:not(.d2) [fill="url(#r5g)"]{fill:currentColor!important}
+svg:not(.d2) [stroke="url(#r5g)"]{stroke:currentColor!important}
+.gbtn:not(#shuf) svg,html.light .gbtn:not(#shuf) svg{filter:drop-shadow(0 0 4px color-mix(in srgb,var(--neon,var(--a)) 60%,transparent))!important}
+
+/* Hora do Show: letra na cor do neon, sem degradê escuro, com o brilho que acende, pulsa e volta */
+html body .hsw .hs{filter:none!important}
+.hs g[fill="url(#hsv)"]{fill:var(--neon,var(--a))!important;stroke:color-mix(in srgb,var(--neon,var(--a)) 35%,#fff)!important}
+html.light .hs g[fill="url(#hsv)"]{fill:color-mix(in srgb,var(--neon,var(--a)) 88%,#fff)!important;stroke:#fff!important}
+@property --gl{syntax:"<number>";inherits:false;initial-value:0}
+.hsw{--gl:0;animation:hsGlow 4.5s ease-in-out infinite;filter:drop-shadow(0 0 calc(1px + 2px*var(--gl)) color-mix(in srgb,var(--neon,var(--a)) 50%,#fff)) drop-shadow(0 0 calc(3px + 11px*var(--gl)) var(--neon,var(--a))) drop-shadow(0 0 calc(4px + 26px*var(--gl)) color-mix(in srgb,var(--neon,var(--a)) calc(10% + 60%*var(--gl)),transparent))}
+@keyframes hsGlow{0%,100%{--gl:0}50%{--gl:1}}
+/* elipse sempre branca, acendendo e apagando enquanto a bolinha dá a volta */
+html .hs>g[fill="#fff"],html.light .hs>g[fill="#fff"]{fill:#fff!important;animation:hsEl 2.25s ease-in-out infinite}
+@keyframes hsEl{0%,100%{opacity:.5}50%{opacity:1}}
+@media (prefers-reduced-motion:reduce){.hsw,.hs>g[fill="#fff"]{animation:none}}

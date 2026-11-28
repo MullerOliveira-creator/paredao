@@ -169,3 +169,4 @@ Para atualizar no GitHub: suba `index.html`, `spotify.js`, `r5.css`, `r5.js`, `r
 - 15d: barra de tempo nas arestas do cubo; seletor de cor não fecha mais no iPhone; espera troca música só em face escondida; 1 gesto de rolagem = 1 face; controles do player na linha de baixo; cubo maior e mais calmo.
 - 15e: giro do cubo mais lento (1,4 s) e arrasto menos sensível; letra longa quebra linha em vez de sair da tela.
 - 15f: janelinha do Chrome mede de novo quando os estilos carregam (Órbita ficava com zoom gigante); sem contorno de seleção depois do clique; F11 não acende botão.
+- 15g: espera com logo menor, cubo no meio da altura da tela e Podcasts na linha de Playlists/Fila.
