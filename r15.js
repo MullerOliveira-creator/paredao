@@ -90,23 +90,34 @@
     const s = document.createElementNS(NS, "svg"); s.setAttribute("class", "edgep"); s.setAttribute("aria-hidden", "true");
     const bg = document.createElementNS(NS, "rect"); bg.setAttribute("class", "eb"); bg.setAttribute("pathLength", "100");
     const r = document.createElementNS(NS, "rect"); r.setAttribute("class", "ef"); r.setAttribute("pathLength", "100");
-    s.appendChild(bg); s.appendChild(r); f.appendChild(s); return r;
+    const hd = document.createElementNS(NS, "rect"); hd.setAttribute("class", "eh"); hd.setAttribute("pathLength", "100");
+    const tr = [];
+    for (let i = 1; i <= 7; i++) { const t = document.createElementNS(NS, "rect"); t.setAttribute("class", "et"); t.setAttribute("pathLength", "100"); t.style.setProperty("--i", i); tr.push(t); }
+    s.appendChild(bg); s.appendChild(r); tr.slice().reverse().forEach(t => s.appendChild(t)); s.appendChild(hd); f.appendChild(s); return [r, hd, tr];
   });
+  let q0 = 12.5; // onde a barra começa: no meio da aresta de cima
   // tamanho do contorno em pixels (o navegador não aceita o retângulo em %)
-  let sz = "";
+  let sz = "", last = -1;
   const geo = () => {
     const w = faces[0].offsetWidth, h = faces[0].offsetHeight, k = w + "x" + h; if (!w || k === sz) return; sz = k;
     const rad = Math.max(4, parseFloat(getComputedStyle(faces[0]).borderTopLeftRadius) || w * .06) - 2;
     faces.forEach(f => f.querySelectorAll(".edgep rect").forEach(r => { r.setAttribute("x", 2); r.setAttribute("y", 2); r.setAttribute("width", f.offsetWidth - 4); r.setAttribute("height", f.offsetHeight - 4); r.setAttribute("rx", rad); }));
     faces.forEach(f => { const s = f.querySelector(".edgep"); s.setAttribute("viewBox", `0 0 ${f.offsetWidth} ${f.offsetHeight}`); });
+    q0 = (w / 2 - rad) / (2 * (w + h) - 8 * rad + 2 * Math.PI * rad) * 100; last = -1;
   };
   geo(); addEventListener("resize", () => setTimeout(geo, 200)); setInterval(geo, 1500);
-  let last = -1;
+  // a barra corre só na face que está de frente (numa aresta dividida por duas faces, não aparecem duas barras)
+  setInterval(() => { let fr = 0; try { fr = typeof front === "function" ? front() : 0; } catch (e) {} faces.forEach((f, i) => f.classList.toggle("efon", i === fr)); }, 200);
   setInterval(() => {
     const d = (typeof D !== "undefined" ? D : 0) || 0, p = d ? Math.max(0, Math.min(1, S.t / d)) * 100 : 0;
     if (Math.abs(p - last) < .05) return; last = p;
-    const v = p.toFixed(2) + " " + (100 - p + .01).toFixed(2);
-    rects.forEach(r => r.style.strokeDasharray = v);
+    const v = p.toFixed(2) + " " + (100 - p + .01).toFixed(2), off = (-q0).toFixed(2);
+    const hp = p, hv = ".01 99.99", ho = (-(q0 + hp)).toFixed(2);
+    rects.forEach(([r, hd, tr]) => {
+      r.style.strokeDasharray = v; r.style.strokeDashoffset = off; hd.style.strokeDasharray = hv; hd.style.strokeDashoffset = ho;
+      // rastro de partículas atrás da bolinha
+      tr.forEach((t, i) => { const q = p - (i + 1) * .55; t.style.strokeDasharray = ".01 99.99"; t.style.strokeDashoffset = (-(q0 + q)).toFixed(2); t.style.visibility = q > 0 ? "visible" : "hidden"; });
+    });
   }, 150);
 })();
 
@@ -182,4 +193,41 @@
     }
   };
   addEventListener("resize", place); setInterval(place, 700); place();
+})();
+
+/* Hora do Show no topo do player; na espera fica a foto e o nome de quem entrou, com "Músicas para você" */
+(function () {
+  const h = document.querySelector("#wait .hsw"); if (!h) return;
+  const d = document.createElement("div"); d.id = "plhs"; d.setAttribute("aria-hidden", "true");
+  d.appendChild(h.cloneNode(true)); document.body.appendChild(d);
+  const ws = document.getElementById("ws"); if (!ws) return;
+  const esc = s => String(s).replace(/[&<>"]/g, c => "&#" + c.charCodeAt(0) + ";");
+  let done = "";
+  const fill = () => {
+    const me = window.SPOT && SPOT.me; if (!me) return;
+    const nm = (me.display_name || "").trim(), img = me.images && me.images.length ? (me.images[0].url || "") : "";
+    const k = nm + "|" + img; if (k === done) return; done = k;
+    ws.classList.add("grt");
+    ws.innerHTML = (img ? `<i class="av" style="background-image:url('${esc(img)}')"></i>` : `<i class="av noimg">${esc((nm[0] || "?").toUpperCase())}</i>`) +
+      `<span class="tx">${nm ? `<small>Olá, ${esc(nm)}!</small>` : ""}<b>Músicas para você</b></span>`;
+  };
+  fill(); setInterval(fill, 2000);
+})();
+
+/* no PC o Hora do Show fica na linha de baixo, no vão entre o botão de avançar e o do mini player */
+(function () {
+  const d = document.getElementById("plhs"); if (!d) return;
+  const vis = b => b && b.offsetParent && b.getBoundingClientRect().width > 0;
+  const place = () => {
+    if (innerWidth <= 700 || document.body.dataset.s !== "pl") { d.classList.remove("low"); d.style.cssText = ""; return; }
+    const nx = [...document.querySelectorAll("#stage .tr button")].filter(vis).pop();
+    const pp = [...document.querySelectorAll("#stage .cbr button")].filter(vis)[0];
+    if (!nx || !pp) return;
+    const a = nx.getBoundingClientRect(), b = pp.getBoundingClientRect(), gap = b.left - a.right;
+    if (gap < 160) { d.classList.remove("low"); d.style.cssText = ""; return; }
+    const w = Math.min(330, gap - 48), cy = (a.top + a.bottom) / 2;
+    d.classList.add("low");
+    d.style.cssText = `left:${(a.right + b.left) / 2}px;top:${cy - w * 150 / 712 / 2}px;width:${w}px`;
+  };
+  setInterval(place, 600); addEventListener("resize", place); place();
 })();

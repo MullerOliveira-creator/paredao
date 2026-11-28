@@ -21,7 +21,7 @@ body.cuhold #stage #cu,body.cuhold #stage #cu>.f:after{animation-play-state:paus
 }
 /* letra grande: maior e quase de ponta a ponta (da nota musical até a engrenagem) */
 @media (min-width:701px) and (orientation:landscape){
- #bigly{width:calc(100vw - 2*(clamp(56px,7vw,120px)))!important;top:44%!important}
+ #bigly{width:calc(100vw - 2*(clamp(56px,7vw,120px)))!important;top:44%!important;max-width:none!important}
  #bigly h2{font-size:min(var(--lw,10.5vw),var(--lh,16vh))!important;line-height:1.02!important}
  #bigly p{font-size:min(2.9vw,4.3vh)!important}
 }

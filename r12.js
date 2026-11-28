@@ -125,7 +125,7 @@
   const big = $("#bigly");
   if (big) {
     const sz = () => { const h = big.querySelector("h2"); if (!h) return; const n = h.textContent.trim().length;
-      const v = n <= 18 ? [13, 19] : n <= 28 ? [11.5, 16] : n <= 40 ? [9.5, 13] : n <= 60 ? [8, 11] : [6.6, 9];
+      const v = n <= 18 ? [15, 26] : n <= 28 ? [13, 22] : n <= 40 ? [10.8, 18.5] : n <= 60 ? [9, 15] : [7.4, 12]; // letra larga, quase de ponta a ponta
       big.style.setProperty("--lw", v[0] + "vw"); big.style.setProperty("--lh", v[1] + "vh"); };
     new MutationObserver(sz).observe(big, { childList: true, subtree: true, characterData: true }); sz();
   }
