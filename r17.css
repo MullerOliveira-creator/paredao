@@ -1,0 +1,8 @@
+/* Paredão Player — rodada 17 */
+/* ponteiro do tempo da primeira versão, em volta do cubo; a barra por face (rodada 15) sai de cena */
+#rgc{position:fixed;left:0;top:0;width:100vw;height:100vh;pointer-events:none;z-index:6}
+#cu>.f>.edgep{display:none!important}
+/* a caixa dos controles do meio se estica pela linha toda e ficava por cima dos outros botões de baixo
+   (favoritos, fila, dispositivo, volume, janelinha, tela cheia): o toque caía nela. Agora só os botões dela recebem toque */
+#stage .tr.rgon,#stage .tr{pointer-events:none!important}
+#stage .tr.rgon>*,#stage .tr>*{pointer-events:auto!important}
