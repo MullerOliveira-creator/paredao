@@ -170,7 +170,7 @@
     cu.getAnimations().forEach(a => { if (!(window.CSSAnimation && a instanceof CSSAnimation)) a.cancel(); });
     // giro no sentido do gesto, com um pequeno desvio a cada vez
     const mid = new DOMMatrix(o0).preMultiplySelf ? new DOMMatrix().rotate(ax * .55, ay * .55, (Math.random() - .5) * 10).multiply(new DOMMatrix(o0)) : new DOMMatrix(o0);
-    cu.animate([{ transform: o0 }, { transform: mid.toString(), offset: .42 }, { transform: end }], { duration: 950, easing: "cubic-bezier(.45,.05,.3,1)" });
+    cu.animate([{ transform: o0 }, { transform: mid.toString(), offset: .42 }, { transform: end }], { duration: 1400, easing: "cubic-bezier(.4,.05,.25,1)" });
     clearTimeout(bt); // não volta sozinho para a letra
   };
   const _turn = turn;

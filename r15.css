@@ -25,3 +25,27 @@ input[type=range]:not(#vi)::-moz-range-thumb{width:20px;height:20px;border:0;bor
 input[type=range]:not(#vi)::-moz-range-track{background:none}
 html.light input[type=range]:not(#vi){background:linear-gradient(90deg,var(--a) var(--v,50%),transparent var(--v,50%)),linear-gradient(180deg,#fff,#e6eef2)!important}
 #cfg #cfgpal .c15b{gap:8px}#cfg #cfgpal .c15b small{flex:none;font-size:11px}#cfg #cfgpal .c15b input{flex:1;min-width:0;width:auto!important}
+/* × das Configurações mais no canto, perto da curva */
+#cfgx[aria-label]{right:6px!important;top:2px!important;width:40px;height:40px;display:grid!important;place-items:center;padding:0!important;font-size:28px!important;border-radius:50%!important;opacity:.8}
+#cfgx[aria-label]:hover{background:rgba(255,255,255,.12)!important;opacity:1}
+/* barra de tempo nas arestas do cubo */
+#cu>.f>.edgep{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none;z-index:6}
+#cu>.f>.edgep rect{fill:none;stroke-linecap:round}
+#cu>.f>.edgep .eb{stroke:rgba(255,255,255,.12);stroke-width:3px}
+#cu>.f>.edgep .ef{stroke:color-mix(in srgb,var(--ne,var(--a)) 70%,#fff);stroke-width:5px;transition:stroke-dasharray .3s linear;filter:drop-shadow(0 0 4px var(--ne,var(--a)))}
+html.lite #cu>.f>.edgep .ef{filter:none}
+/* controles na linha de baixo (computador e TV) */
+body.trlow #stage .tr{z-index:30}
+@media (min-width:701px){
+ body.trlow[data-s=pl] #stage #st{translate:0 -3%!important}
+ body.trlow[data-s=pl] #stage #cu{scale:.97!important}
+}
+/* cubo mais calmo: balança bem menos (o ponto de parada novo vem com o seu desenho) */
+@keyframes cubeIdle2{0%,100%{rotate:-.6 calc(-.8*var(--sd)) 0 calc(var(--tl) - 1deg)}50%{rotate:-.5 calc(-.86*var(--sd)) 0 calc(var(--tl) + 1.2deg)}}
+/* letra grande: a palavra/linha cantada não pode impedir a quebra de linha (frase longa saía da tela na TV) */
+#bigly h2 span.a{display:inline!important;transform:none!important}
+#bigly h2{overflow-wrap:anywhere;max-width:100%}
+/* contornos de seleção só para quem navega pelo teclado */
+button:focus:not(:focus-visible),input:focus:not(:focus-visible),[tabindex]:focus:not(:focus-visible){outline:none!important}
+input[type=range]:focus,input[type=range]:focus-visible{outline:none!important}
+body.nohover #stage button,body.nohover .gbtn,body.nohover #wait button{pointer-events:none}

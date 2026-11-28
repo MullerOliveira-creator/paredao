@@ -40,7 +40,7 @@
       const now = performance.now();
       if (g.axis === "s") { g.sc.scrollTop -= e.clientY - g.ly; }
       else {
-        const sz = opts.size() || 300, sens = 90 / (sz * .75);
+        const sz = opts.size() || 300, sens = 90 / (sz * 1.3);
         const d = g.axis === "y" ? dx : -dy;
         g.ax = Math.max(-100, Math.min(100, d * sens));
         g.v = ((g.axis === "y" ? e.clientX - g.lx : -(e.clientY - g.ly)) * sens) / Math.max(1, now - g.t) * 1000;

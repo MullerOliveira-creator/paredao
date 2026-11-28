@@ -54,7 +54,7 @@ html.light #pipc button{color:var(--a);background:radial-gradient(circle at 35% 
     const w = PIP.win; if (!w) return;
     stg.style.transform = "none";
     const r = stg.getBoundingClientRect(), W = w.innerWidth - 24, H = w.innerHeight - 84;
-    const z = Math.max(.4, Math.min(3, W / (r.width || 1), H / (r.height || 1)));
+    const z = Math.max(.4, Math.min(2, W / (r.width || 1), H / (r.height || 1)));
     stg.style.transform = `scale(${z})`;
   }
   function upd() {
@@ -89,6 +89,9 @@ html.light #pipc button{color:var(--a);background:radial-gradient(circle at 35% 
     document.body.classList.add("pipon");
     upd(); requestAnimationFrame(fit); setTimeout(fit, 300);
     w.addEventListener("resize", fit);
+    // os estilos da janelinha carregam depois: medir de novo até estabilizar (antes ficava com zoom gigante)
+    d.querySelectorAll("link[rel=stylesheet]").forEach(l => l.addEventListener("load", () => setTimeout(fit, 30)));
+    const fitT = setInterval(() => { if (PIP.win !== w || w.closed) return clearInterval(fitT); fit(); }, 700);
     // botões da janelinha usam o mesmo tratador de cliques da página
     d.body.addEventListener("click", e => {
       const b = e.target.closest("[data-a]"); if (!b) return;

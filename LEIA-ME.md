@@ -165,3 +165,7 @@ Para atualizar no GitHub: suba `index.html`, `spotify.js`, `r5.css`, `r5.js`, `r
 ## Rodada 15 — cores simples
 - r15.js/css: Configurações → Cores com duas bolas (Fundo e Neon, abrem o seletor de cor do aparelho), barra de brilho do neon e combinações prontas. r5.js aceita fundo livre (bgx) e brilho (nb); o claro/escuro sai da cor do fundo.
 - 15b: todas as barras (brilho, vidro do cubo, volume dos aparelhos etc.) com a mesma cara da barra de volume.
+- 15c: engrenagem abre e fecha as Configurações; × mais no canto.
+- 15d: barra de tempo nas arestas do cubo; seletor de cor não fecha mais no iPhone; espera troca música só em face escondida; 1 gesto de rolagem = 1 face; controles do player na linha de baixo; cubo maior e mais calmo.
+- 15e: giro do cubo mais lento (1,4 s) e arrasto menos sensível; letra longa quebra linha em vez de sair da tela.
+- 15f: janelinha do Chrome mede de novo quando os estilos carregam (Órbita ficava com zoom gigante); sem contorno de seleção depois do clique; F11 não acende botão.
